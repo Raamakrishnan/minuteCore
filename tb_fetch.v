@@ -18,15 +18,15 @@ fetch fetch
 
 always #(5) clk=~clk;
 
-initial begin
-    $dumpfile("tb_fetch.vcd");
-    $dumpvars(0, tb_fetch);
-end
+// initial begin
+//     $dumpfile("tb_fetch.vcd");
+//     $dumpvars(0, tb_fetch);
+// end
 
 initial begin
-    reset<=1'b1;    clk<=1'b0;
-    #10 reset <= 0;
-    #100 $finish();
+    reset<=1'b1;    clk<=1'b1;
+    #16 reset <= 0;
+    #50 $finish();
 end
 
 initial $monitor("%0d\tclk: %b reset: %b PC: %h", $time, clk, reset, PC);

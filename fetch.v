@@ -10,7 +10,9 @@ module fetch(
 
     //Interface with memory
     output reg [ `ADDR_SIZE : 0] addr_to_mem,
+    output reg st_addr_to_mem,
     input wire data_from_mem,
+    input wire int_data_from_mem,
 
     //Interface with pipeline
     output reg [`INSTR_SIZE : 0] instr,
@@ -26,7 +28,7 @@ module fetch(
 
     always@(is_flush or flush_addr or is_stall or PC or reset) begin
         if(reset)
-            next_PC = 'd4;
+            next_PC = 0;
         else if(is_stall)
             next_PC = PC;
         else if(is_flush)
@@ -35,11 +37,8 @@ module fetch(
             next_PC = PC + 'd4;
     end
 
-    always@(clk or reset) begin
-        if(reset)
-            PC = 0;
-        else
-            PC = next_PC;
+    always@(posedge(clk)) begin
+        PC = next_PC;
     end
 
 endmodule
