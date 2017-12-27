@@ -1,0 +1,13 @@
+0	FETCH: clk: 1 reset: 1 PC: xxxxxxxx instr: xxxxxxxx
+5	FETCH: clk: 0 reset: 1 PC: xxxxxxxx instr: xxxxxxxx
+7	FETCH: clk: 0 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+10	FETCH: clk: 1 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+15	FETCH: clk: 0 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+20	FETCH: clk: 1 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+25	FETCH: clk: 0 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+30	FETCH: clk: 1 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+35	FETCH: clk: 0 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+40	FETCH: clk: 1 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+45	FETCH: clk: 0 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+50	FETCH: clk: 1 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
+55	FETCH: clk: 0 reset: 0 PC: xxxxxxxx instr: xxxxxxxx
