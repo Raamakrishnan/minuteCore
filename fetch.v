@@ -28,20 +28,17 @@ module fetch(
     reg [`ADDR_SIZE : 0] next_PC;
     reg [`INSTR_SIZE : 0] rg_data_from_mem;
     reg mem_valid;
+    reg rg_flush;
+    reg rg_stall;
 
-    always@(flush or flush_addr or stall or PC or reset) begin
-        if(reset)
-            next_PC <= 0;
-        else if(stall)
-            next_PC <= PC;
-        else if(flush)
-            next_PC <= flush_addr;
-        else
-            next_PC <= PC + 'd4;
+    always@(posedge(flush)) begin
+        rg_flush <= 1;
+        $display("%0d\tFETCH: Flush - Addr: %h", $time, flush_addr);
     end
+    always@(posedge(stall)) rg_stall <= 1;
 
-    always@(mem_rd_enable or mem_rd_ready or reset or next_PC) begin
-        if(reset) begin
+    always@(mem_rd_enable or mem_rd_ready or reset or next_PC or rg_flush) begin
+        if(reset || rg_flush) begin
             mem_valid <= 0;
         end
         else if(!mem_rd_enable) begin
@@ -57,19 +54,42 @@ module fetch(
     always@(posedge(clk)) begin
         if(reset) begin
             PC <= 0;
+            next_PC <= 0;
+            pipeline_valid <= 0;
+            mem_rd_enable <= 0;
+        end
+        else if(rg_flush) begin
+            PC <= PC;
+            next_PC <= flush_addr;
             pipeline_valid <= 0;
             mem_rd_enable <= 0;
         end
         else if(mem_valid) begin
-            PC <= next_PC;
             instr <= rg_data_from_mem;
             pipeline_valid <= 1;
             mem_rd_enable <= 0;
+            if(rg_stall) begin
+                PC <= PC;
+                next_PC <= next_PC;
+            end
+            else begin
+                PC <= next_PC;
+                next_PC <= next_PC + 'd4;
+            end
         end
+        else begin
+            pipeline_valid <= 0;
+        end
+        rg_flush <= 0;
+        rg_stall <= 0;
     end
 
 `ifdef SIMULATE
-    initial $monitor("%0d\tFETCH: clk: %b reset: %b mem_rd_enable: %b mem_rd_ready: %b PC: %h nextPC: %h instr: %h", $time, clk, reset, mem_rd_enable, mem_rd_ready, PC, next_PC, instr);
+    always@(posedge(clk)) begin
+        if(pipeline_valid)
+            $display("%0d\tFETCH: reset: %b mem_rd_enable: %b mem_rd_ready: %b PC: %h nextPC: %h instr: %h", $time, reset, mem_rd_enable, mem_rd_ready, PC, next_PC, instr);
+    end
+
 `endif
 
 endmodule
