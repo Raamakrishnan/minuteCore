@@ -51,7 +51,7 @@ module decode(
 `ifdef SIMULATE
     always@(posedge(clk)) begin
         if(pipeline_out_valid)
-            $display("%0d\tDECODE: reset: %b PC: %h instr: %h", $time, reset, PC_out, instr_out);
+            $display("%0d\tDECODE: PC: %h instr: %h", $time, PC_out, instr_out);
     end
 `endif
 

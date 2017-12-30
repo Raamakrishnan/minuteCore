@@ -21,29 +21,29 @@ module tb;
     reg strobe;
     fetch fetch
     (
-        .reset(reset),
-        .clk (clk),
-        .PC(PC_f_d),
-        .instr(instr_f_d),
-        .pipeline_valid(pipe_valid),
-        .mem_rd_enable(en),
-        .mem_rd_addr(addr),
-        .mem_rd_ready(strobe),
-        .mem_rd_data(data),
-        .stall(stall),
-        .flush(flush),
-        .flush_addr(faddr)
+        .reset          (reset),
+        .clk            (clk),
+        .PC             (PC_f_d),
+        .instr          (instr_f_d),
+        .pipeline_valid (pipe_valid),
+        .mem_rd_enable  (en),
+        .mem_rd_addr    (addr),
+        .mem_rd_ready   (strobe),
+        .mem_rd_data    (data),
+        .stall          (stall),
+        .flush          (flush),
+        .flush_addr     (faddr)
     );
 
     decode decode
     (
-        .clk(clk),
-        .reset(reset),
-        .PC_in(PC_f_d),
-        .instr_in(instr_f_d),
-        .pipeline_in_valid(pipe_valid),
-        .stall(stall),
-        .flush(flush)
+        .clk                (clk),
+        .reset              (reset),
+        .PC_in              (PC_f_d),
+        .instr_in           (instr_f_d),
+        .pipeline_in_valid  (pipe_valid),
+        .stall              (stall),
+        .flush              (flush)
     );
     always #(5) clk=~clk;
 

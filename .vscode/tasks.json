@@ -6,7 +6,7 @@
         {
             "label": "iverilog",
             "type": "shell",
-            "command": "iverilog tb_fetch.v",
+            "command": "iverilog tb.v; vvp a.out",
             "group": {
                 "kind": "build",
                 "isDefault": true

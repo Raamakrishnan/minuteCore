@@ -87,7 +87,7 @@ module fetch(
 `ifdef SIMULATE
     always@(posedge(clk)) begin
         if(pipeline_valid)
-            $display("%0d\tFETCH: reset: %b mem_rd_enable: %b mem_rd_ready: %b PC: %h nextPC: %h instr: %h", $time, reset, mem_rd_enable, mem_rd_ready, PC, next_PC, instr);
+            $display("%0d\tFETCH: PC: %h nextPC: %h instr: %h", $time, PC, next_PC, instr);
     end
 
 `endif
