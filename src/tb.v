@@ -1,10 +1,10 @@
 `ifdef __ICARUS__
     `define SIMULATE
     `ifndef INCLUDE_PARAMS
-        `include "params.v"
+        `include "./src/params.v"
     `endif
-    `include "fetch.v"
-    `include "decode.v"
+    `include "./src/fetch.v"
+    `include "./src/decode.v"
 `endif
 
 module tb;
