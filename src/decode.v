@@ -31,10 +31,10 @@ module decode(
     end
 
     always @(posedge(clk)) begin
-        if(reset || rg_flush) begin
+        if(reset || flush) begin
             pipeline_out_valid <= 0;
         end
-        else if(rg_stall) begin
+        else if(stall) begin
             PC_out <= PC_out;
             instr_out <= instr_out;
             pipeline_out_valid <= pipeline_out_valid;

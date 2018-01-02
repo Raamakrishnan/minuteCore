@@ -38,12 +38,13 @@ module fetch(
     always@(posedge(stall)) rg_stall <= 1;
 
     always@(mem_rd_enable or mem_rd_ready or reset or next_PC or rg_flush) begin
-        if(reset || rg_flush) begin
+        if(reset) begin
             mem_valid <= 0;
         end
         else if(!mem_rd_enable) begin
             mem_rd_addr <= next_PC;
             mem_rd_enable <= 1;
+            mem_valid <= 0;
         end
         else if(mem_rd_enable && mem_rd_ready) begin
             rg_data_from_mem <= mem_rd_data;
@@ -58,7 +59,7 @@ module fetch(
             pipeline_valid <= 0;
             mem_rd_enable <= 0;
         end
-        else if(rg_flush) begin
+        else if(flush) begin
             PC <= PC;
             next_PC <= flush_addr;
             pipeline_valid <= 0;
@@ -68,7 +69,7 @@ module fetch(
             instr <= rg_data_from_mem;
             pipeline_valid <= 1;
             mem_rd_enable <= 0;
-            if(rg_stall) begin
+            if(stall) begin
                 PC <= PC;
                 next_PC <= next_PC;
             end

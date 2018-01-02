@@ -31,7 +31,7 @@ module regfile(
     reg [`REG_ADDR_SIZE : 1] i;                 //iterator
     always@(negedge(clk)) begin
         if(reset) begin
-            for (i = 0; i < 32 ; i++ ) begin
+            for (i = 1; i < 32 ; i++ ) begin
                 mem[i] <= 0;
             end
             rd_data_valid_1 <= 0;

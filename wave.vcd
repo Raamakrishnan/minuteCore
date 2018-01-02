@@ -1,0 +1,229 @@
+$date
+	Tue Jan 02 16:31:41 2018
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module tb $end
+$var wire 1 ! pipe_valid $end
+$var wire 32 " instr_f_d [31:0] $end
+$var wire 1 # en $end
+$var wire 32 $ addr [31:0] $end
+$var wire 32 % PC_f_d [31:0] $end
+$var reg 1 & clk $end
+$var reg 32 ' data [31:0] $end
+$var reg 32 ( faddr [31:0] $end
+$var reg 1 ) flush $end
+$var reg 1 * reset $end
+$var reg 1 + stall $end
+$var reg 1 , strobe $end
+$scope module decode $end
+$var wire 1 & clk $end
+$var wire 1 ) flush $end
+$var wire 1 * reset $end
+$var wire 1 + stall $end
+$var wire 1 ! pipeline_in_valid $end
+$var wire 32 - instr_in [31:0] $end
+$var wire 32 . PC_in [31:0] $end
+$var reg 32 / PC_out [31:0] $end
+$var reg 32 0 instr_out [31:0] $end
+$var reg 1 1 pipeline_out_valid $end
+$var reg 1 2 rg_flush $end
+$var reg 1 3 rg_stall $end
+$upscope $end
+$scope module fetch $end
+$var wire 1 & clk $end
+$var wire 1 ) flush $end
+$var wire 32 4 flush_addr [31:0] $end
+$var wire 32 5 mem_rd_data [31:0] $end
+$var wire 1 , mem_rd_ready $end
+$var wire 1 * reset $end
+$var wire 1 + stall $end
+$var reg 32 6 PC [31:0] $end
+$var reg 32 7 instr [31:0] $end
+$var reg 32 8 mem_rd_addr [31:0] $end
+$var reg 1 # mem_rd_enable $end
+$var reg 1 9 mem_valid $end
+$var reg 32 : next_PC [31:0] $end
+$var reg 1 ! pipeline_valid $end
+$var reg 32 ; rg_data_from_mem [31:0] $end
+$var reg 1 < rg_flush $end
+$var reg 1 = rg_stall $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+0=
+0<
+bx ;
+b0 :
+09
+bx 8
+bx 7
+b0 6
+bx 5
+b0 4
+03
+02
+01
+bx 0
+bx /
+b0 .
+bx -
+0,
+0+
+1*
+0)
+b0 (
+bx '
+1&
+b0 %
+bx $
+0#
+bx "
+0!
+$end
+#5
+0&
+#10
+1#
+b0 $
+b0 8
+1&
+0*
+#15
+0&
+#20
+1&
+#25
+0&
+#30
+19
+b1000000000000000 ;
+1&
+1,
+b1000000000000000 '
+b1000000000000000 5
+#35
+0&
+0,
+#40
+b100 $
+b100 8
+b100 :
+1#
+1!
+b1000000000000000 "
+b1000000000000000 -
+b1000000000000000 7
+1&
+#45
+0&
+#50
+b1000 $
+b1000 8
+11
+b1000000000000000 0
+b0 /
+b1000 :
+b100 %
+b100 .
+b100 6
+1#
+1&
+#55
+0&
+#60
+b100 $
+b100 8
+1#
+0!
+b100 :
+b100 /
+b1000000000001000 ;
+0<
+02
+1&
+1,
+b1000000000001000 '
+b1000000000001000 5
+1)
+b100 (
+b100 4
+#65
+0&
+0,
+0)
+#70
+b1000 $
+b1000 8
+b1000 :
+1#
+1!
+b1000000000001000 "
+b1000000000001000 -
+b1000000000001000 7
+1&
+#75
+0&
+#80
+b1100 $
+b1100 8
+b1100 :
+b1000 %
+b1000 .
+b1000 6
+1#
+b1000000000001000 0
+1&
+#85
+0&
+#90
+b10000 $
+b10000 8
+b1000 /
+b10000 :
+b1100 %
+b1100 .
+b1100 6
+1#
+b1000000000001100 ;
+1&
+1,
+b1000000000001100 '
+b1000000000001100 5
+#95
+0&
+0,
+#100
+b10100 $
+b10100 8
+b10100 :
+b10000 %
+b10000 .
+b10000 6
+1#
+b1000000000001100 "
+b1000000000001100 -
+b1000000000001100 7
+b1100 /
+1&
+#105
+0&
+#110
+b11000 $
+b11000 8
+b1000000000001100 0
+b10000 /
+b11000 :
+b10100 %
+b10100 .
+b10100 6
+1#
+1&
+#115
+0&

@@ -48,26 +48,26 @@ module tb;
     always #(5) clk=~clk;
 
     initial begin
-        $dumpfile("wave.vcd");
+        $dumpfile("./bin/wave.vcd");
         $dumpvars(0, tb);
     end
 
     initial begin
         reset=1;    clk=1; strobe=0; stall=0; flush =0; faddr = 0;
-        #7 reset = 0;
-        // repeat(1) begin
-        //     #40 stall = 1;
-        //     #2 stall = 0;
-        // end
+        #10 reset = 0;
+        repeat(1) begin
+            #40 stall = 1;
+            #10 stall = 0;
+        end
         #50 faddr = 'd4;
         flush = 1;
-        #2 flush = 0;
+        #10 flush = 0;
         #50 $finish();
     end
 
     always@(posedge(en)) begin
         #5 data = addr + 'h8000; strobe = 1;
-        #2 strobe = 0;
+        #5 strobe = 0;
     end
 
     always@(posedge(clk)) $display("************************\n");
