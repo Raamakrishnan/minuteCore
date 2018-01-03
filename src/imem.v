@@ -1,6 +1,6 @@
 `ifdef __ICARUS__
     `ifndef INCLUDE_PARAMS
-        `include "./src/params.v"
+        `include "./src/def_params.v"
     `endif
 `endif
 

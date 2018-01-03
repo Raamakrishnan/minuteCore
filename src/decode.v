@@ -1,6 +1,6 @@
 `ifdef __ICARUS__
     `ifndef INCLUDE_PARAMS
-        `include "./src/params.v"
+        `include "./src/def_params.v"
     `endif
 `endif
 
@@ -17,10 +17,27 @@ module decode(
     output reg [`ADDR_SIZE : 0] PC_out,
     output reg [`INSTR_SIZE : 0] instr_out,
     output reg pipeline_out_valid,
+    output reg [`REG_DATA_SIZE : 0] op1,
+    output reg [`REG_DATA_SIZE : 0] op2,
+
+    //Interface RegFile
+    //Readport 1
+    output reg [`REG_ADDR_SIZE : 0] rs1_addr,
+    // output reg rs1_enable,
+    input wire [`REG_DATA_SIZE : 0] rs1_data,
+    //Readport 2
+    output reg [`REG_ADDR_SIZE : 0] rs2_addr,
+    // output reg rs2_enable,
+    input wire [`REG_DATA_SIZE : 0] rs2_data,
 
     input wire stall,
     input wire flush
 );
+
+    always@(*) begin
+        rs1_addr = instr_in[4:0];
+        rs2_addr = instr_in[4:0];
+    end
 
     always @(posedge(clk)) begin
         if(reset || flush) begin
@@ -43,6 +60,12 @@ module decode(
         else if(pipeline_in_valid) begin
             PC_out <= PC_in;
             instr_out <= instr_in;
+            // rs1_addr = instr_in[4:0];
+            // rs1_enable = 1;
+            // rs2_addr = instr_in[4:0];
+            // rs2_enable = 1;
+            op1 <= rs1_data;
+            op2 <= rs2_data;
             pipeline_out_valid <= pipeline_in_valid;
             `ifdef SIMULATE
                 $display("%0d\t************DECODE Firing************", $time);
@@ -51,12 +74,13 @@ module decode(
         end
     end
 
-    wire [`REG_ADDR_SIZE : 0] rs1, rs2, rd;
-    wire
+    // wire [`REG_ADDR_SIZE : 0] rs1_addr, rs2_addr, rd_addr;
+    // wire [`REG_DATA_SIZE : 0] op1, op2;
     //decoder
     always@(negedge(clk)) begin
         if(pipeline_in_valid) begin
 
+            $display("%0d\tDECODE: rs1: %h rs2: %h", $time, rs1_data, rs2_data);
         end
     end
 

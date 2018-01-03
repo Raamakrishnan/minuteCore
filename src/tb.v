@@ -1,10 +1,11 @@
 `ifdef __ICARUS__
     `define SIMULATE
     `ifndef INCLUDE_PARAMS
-        `include "./src/params.v"
+        `include "./src/def_params.v"
     `endif
     `include "./src/fetch.v"
     `include "./src/decode.v"
+    `include "./src/regfile.v"
 `endif
 
 module tb;
@@ -35,6 +36,13 @@ module tb;
         .flush_addr     (faddr)
     );
 
+    wire [`REG_ADDR_SIZE : 0] rs1_addr;
+    wire rs1_enable;
+    wire [`REG_DATA_SIZE : 0] rs1_data;
+    wire [`REG_ADDR_SIZE : 0] rs2_addr;
+    wire rs2_enable;
+    wire [`REG_DATA_SIZE : 0] rs2_data;
+
     decode decode
     (
         .clk                (clk),
@@ -42,9 +50,32 @@ module tb;
         .PC_in              (PC_f_d),
         .instr_in           (instr_f_d),
         .pipeline_in_valid  (pipe_valid),
+
+        //Interface Regfile
+        .rs1_addr(rs1_addr),
+        // .rs1_enable(rs1_enable),
+        .rs1_data(rs1_data),
+        .rs2_addr(rs2_addr),
+        // .rs2_enable(rs2_enable),
+        .rs2_data(rs2_data),
+
         .stall              (stall),
         .flush              (flush)
     );
+
+    regfile regfile
+    (
+        .clk        (clk),
+        .reset      (reset),
+
+        .rd_addr_1(rs1_addr),
+        // .rd_enable_1(rs1_enable),
+        .rd_data_1(rs1_data),
+        .rd_addr_2(rs2_addr),
+        // .rd_enable_2(rs2_enable),
+        .rd_data_2(rs2_data)
+    );
+
     always #(5) clk=~clk;
 
     initial begin
@@ -55,14 +86,14 @@ module tb;
     initial begin
         reset=1;    clk=1; strobe=0; stall=0; flush =0; faddr = 0;
         #10 reset = 0;
-        repeat(1) begin
-            #40 stall = 1;
-            #10 stall = 0;
-        end
-        #50 faddr = 'd4;
-        flush = 1;
-        #10 flush = 0;
-        #50 $finish();
+        // repeat(1) begin
+        //     #40 stall = 1;
+        //     #10 stall = 0;
+        // end
+        // #50 faddr = 'd4;
+        // flush = 1;
+        // #10 flush = 0;
+        #100 $finish();
     end
 
     always@(posedge(en)) begin
