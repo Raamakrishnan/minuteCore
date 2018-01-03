@@ -10,15 +10,11 @@ module regfile(
 
     //Read port 1
     input wire [`REG_ADDR_SIZE : 0] rd_addr_1,
-    // input wire rd_enable_1,
     output reg [`REG_DATA_SIZE : 0] rd_data_1,
-    // output reg rd_data_valid_1,
 
     //Read port 2
     input wire [`REG_ADDR_SIZE : 0] rd_addr_2,
-    // input wire rd_enable_2,
     output reg [`REG_DATA_SIZE : 0] rd_data_2,
-    // output reg rd_data_valid_2,
 
     //Write port
     input wire [`REG_ADDR_SIZE : 0] wr_addr,
@@ -44,8 +40,9 @@ module regfile(
     end
 
     always@(negedge(clk)) begin
-        rd_data_1 <= rd_addr_1 + 'h1000;
-        rd_data_2 <= rd_addr_2 + 'h2000;
+        $strobe("%0d\tREGFILE: rs1: %h rs2: %h", $time, rd_addr_1, rd_addr_2);
+        rd_data_1 <= (rd_addr_1 == 0)? 0 : mem[rd_addr_1];
+        rd_data_2 <= (rd_addr_2 == 0)? 0 : mem[rd_addr_2];
     end
 
 endmodule // regfile
