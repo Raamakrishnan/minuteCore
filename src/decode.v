@@ -22,14 +22,6 @@ module decode(
     input wire flush
 );
 
-    // reg rg_stall, rg_flush;
-
-    // always@(posedge(stall)) rg_stall <= 1;
-    // always@(posedge(flush)) begin
-    //     rg_flush <= 1;
-    //     $display("%0d\tDECODE: Flush", $time);
-    // end
-
     always @(posedge(clk)) begin
         if(reset || flush) begin
             pipeline_out_valid <= 0;
@@ -57,10 +49,10 @@ module decode(
                 $display("%0d\tDECODE: PC: %h instr: %h", $time, PC_out, instr_out);
             `endif
         end
-        // rg_stall <= 0;
-        // rg_flush <= 0;
     end
 
+    wire [`REG_ADDR_SIZE : 0] rs1, rs2, rd;
+    wire
     //decoder
     always@(negedge(clk)) begin
         if(pipeline_in_valid) begin

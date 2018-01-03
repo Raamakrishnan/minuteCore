@@ -9,24 +9,24 @@ module regfile(
     input wire reset,
 
     //Read port 1
-    input wire [`REG_ADDR_SIZE : 1] rd_addr_1,
+    input wire [`REG_ADDR_SIZE : 0] rd_addr_1,
     input wire rd_enable_1,
-    output reg [`REG_DATA_SIZE : 1] rd_data_1,
+    output reg [`REG_DATA_SIZE : 0] rd_data_1,
     output reg rd_data_valid_1,
 
     //Read port 2
-    input wire [`REG_ADDR_SIZE : 1] rd_addr_2,
+    input wire [`REG_ADDR_SIZE : 0] rd_addr_2,
     input wire rd_enable_2,
-    output reg [`REG_DATA_SIZE : 1] rd_data_2,
+    output reg [`REG_DATA_SIZE : 0] rd_data_2,
     output reg rd_data_valid_2,
 
     //Write port
-    input wire [`REG_ADDR_SIZE : 1] wr_addr,
-    input wire [`REG_DATA_SIZE : 1] wr_data,
+    input wire [`REG_ADDR_SIZE : 0] wr_addr,
+    input wire [`REG_DATA_SIZE : 0] wr_data,
     input wire wr_enable
 );
 
-    reg [`REG_DATA_SIZE : 1] mem [`REG_SIZE : 1];
+    reg [`REG_DATA_SIZE : 0] mem [`REG_SIZE : 1];
 
     reg [`REG_ADDR_SIZE : 1] i;                 //iterator
     always@(negedge(clk)) begin
