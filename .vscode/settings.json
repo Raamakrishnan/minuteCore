@@ -1,2 +1,3 @@
 {
+    "verilog.iverilog.arguments": "-Wall"
 }

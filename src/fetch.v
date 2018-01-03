@@ -28,16 +28,8 @@ module fetch(
     reg [`ADDR_SIZE : 0] next_PC;
     reg [`INSTR_SIZE : 0] rg_data_from_mem;
     reg mem_valid;
-    reg rg_flush;
-    reg rg_stall;
 
-    always@(posedge(flush)) begin
-        rg_flush <= 1;
-        $display("%0d\tFETCH: Flush - Addr: %h", $time, flush_addr);
-    end
-    always@(posedge(stall)) rg_stall <= 1;
-
-    always@(mem_rd_enable or mem_rd_ready or reset or next_PC or rg_flush) begin
+    always@(mem_rd_enable or mem_rd_ready or reset or next_PC) begin
         if(reset) begin
             mem_valid <= 0;
         end
@@ -58,12 +50,19 @@ module fetch(
             next_PC <= 0;
             pipeline_valid <= 0;
             mem_rd_enable <= 0;
+            `ifdef SIMULATE
+                $display("%0d\tFETCH: Reset", $time);
+            `endif
         end
         else if(flush) begin
             PC <= PC;
+            //TODO: check for instruction address alignment
             next_PC <= flush_addr;
             pipeline_valid <= 0;
             mem_rd_enable <= 0;
+            `ifdef SIMULATE
+                $display("%0d\tFETCH: Flush - Addr: %h", $time, flush_addr);
+            `endif
         end
         else if(mem_valid) begin
             instr <= rg_data_from_mem;
@@ -72,25 +71,21 @@ module fetch(
             if(stall) begin
                 PC <= PC;
                 next_PC <= next_PC;
+                `ifdef SIMULATE
+                    $display("%0d\tFETCH: Stall", $time);
+                `endif
             end
             else begin
                 PC <= next_PC;
                 next_PC <= next_PC + 'd4;
             end
+            `ifdef SIMULATE
+                $display("%0d\t**************FETCH Firing**************", $time);
+                $display("%0d\tFETCH: PC: %h nextPC: %h instr: %h", $time, PC, next_PC, instr);
+            `endif
         end
         else begin
             pipeline_valid <= 0;
         end
-        rg_flush <= 0;
-        rg_stall <= 0;
     end
-
-`ifdef SIMULATE
-    always@(posedge(clk)) begin
-        if(pipeline_valid)
-            $display("%0d\tFETCH: PC: %h nextPC: %h instr: %h", $time, PC, next_PC, instr);
-    end
-
-`endif
-
 endmodule

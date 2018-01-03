@@ -22,38 +22,50 @@ module decode(
     input wire flush
 );
 
-    reg rg_stall, rg_flush;
+    // reg rg_stall, rg_flush;
 
-    always@(posedge(stall)) rg_stall <= 1;
-    always@(posedge(flush)) begin
-        rg_flush <= 1;
-        $display("%0d\tDECODE: Flush", $time);
-    end
+    // always@(posedge(stall)) rg_stall <= 1;
+    // always@(posedge(flush)) begin
+    //     rg_flush <= 1;
+    //     $display("%0d\tDECODE: Flush", $time);
+    // end
 
     always @(posedge(clk)) begin
         if(reset || flush) begin
             pipeline_out_valid <= 0;
+            `ifdef SIMULATE
+                if(reset)
+                    $display("%0d\tDECODE: Reset", $time);
+                if(flush)
+                    $display("%0d\tDECODE: Flush", $time);
+            `endif
         end
         else if(stall) begin
             PC_out <= PC_out;
             instr_out <= instr_out;
             pipeline_out_valid <= pipeline_out_valid;
+            `ifdef SIMULATE
+                $display("%0d\tDECODE: Stall", $time);
+            `endif
         end
         else if(pipeline_in_valid) begin
             PC_out <= PC_in;
             instr_out <= instr_in;
             pipeline_out_valid <= pipeline_in_valid;
+            `ifdef SIMULATE
+                $display("%0d\t************DECODE Firing************", $time);
+                $display("%0d\tDECODE: PC: %h instr: %h", $time, PC_out, instr_out);
+            `endif
         end
-        rg_stall <= 0;
-        rg_flush <= 0;
+        // rg_stall <= 0;
+        // rg_flush <= 0;
     end
 
-`ifdef SIMULATE
-    always@(posedge(clk)) begin
-        if(pipeline_out_valid)
-            $display("%0d\tDECODE: PC: %h instr: %h", $time, PC_out, instr_out);
-    end
-`endif
+    //decoder
+    always@(negedge(clk)) begin
+        if(pipeline_in_valid) begin
 
+        end
+    end
 
 endmodule // decode
