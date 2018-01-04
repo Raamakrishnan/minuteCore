@@ -67,12 +67,4 @@ module decode(
             `endif
         end
     end
-
-    // always@(negedge(clk)) begin
-    //     if(pipeline_in_valid) begin
-
-    //         $display("%0d\tDECODE: rs1: %h rs2: %h", $time, rs1_data, rs2_data);
-    //     end
-    // end
-
 endmodule // decode
