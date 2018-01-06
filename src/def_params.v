@@ -38,7 +38,7 @@
 `define F3_SLT_SLTI     3'b010
 `define F3_SLTU_SLTIU   3'b011
 `define F3_XOR_XORI     3'b100
-`define F3-OR_ORI       3'b110
+`define F3_OR_ORI       3'b110
 `define F3_AND_ANDI     3'b111
 `define F3_SLL_SLLI     3'b001
 `define F3_SR_SRI       3'b101
@@ -50,3 +50,5 @@
 `define F3_CSRRWI       3'b101
 `define F3_CSRRSI       3'b110
 `define F3_CSRRCI       3'b111
+`define F3_FENCE        3'b000
+`define	F3_FENCEI       3'b001
