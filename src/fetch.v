@@ -17,6 +17,7 @@ module fetch(
     //Interface with pipeline
     output reg [`INSTR_SIZE : 0] instr,
     output reg [ `ADDR_SIZE : 0] PC,
+    output reg [`EX_WIDTH : 0] exception,
     output reg pipeline_valid,
 
     input wire flush,
@@ -76,6 +77,10 @@ module fetch(
                 `endif
             end
             else begin
+                if(next_PC[1:0] != 0)
+                    exception <= `EX_INSTR_ADDR_MISALIGN;
+                else
+                    exception <= `EX_NONE;
                 PC <= next_PC;
                 next_PC <= next_PC + 'd4;
             end

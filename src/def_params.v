@@ -52,3 +52,9 @@
 `define F3_CSRRCI       3'b111
 `define F3_FENCE        3'b000
 `define	F3_FENCEI       3'b001
+
+/////////////////////// Exceptions ////////////////////
+`define EX_NONE                     0
+`define EX_INSTR_ADDR_MISALIGN      1
+`define EX_ILLEGAL_INSTR            2
+`define EX_WIDTH                    1

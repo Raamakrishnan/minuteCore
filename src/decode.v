@@ -11,6 +11,7 @@ module decode(
     //Interface pipeline in
     input wire [`ADDR_SIZE : 0] PC_in,
     input wire [`INSTR_SIZE : 0] instr_in,
+    input wire [`EX_WIDTH : 0] excep_in,
     input wire pipeline_in_valid,
 
     //Interface pipeline out
@@ -18,6 +19,7 @@ module decode(
     `ifdef SIMULATE
     output reg [`INSTR_SIZE : 0] instr_out,
     `endif
+    output reg [`EX_WIDTH : 0] excep_out,
     output reg pipeline_out_valid,
     output reg [4:0] opcode,
     output reg [2:0] funct,
@@ -57,64 +59,71 @@ module decode(
     always@(*) begin
         nop_instr = 0;
         opcode = op;
-        //Integer Computational Instructions
-        if(op == `OP_IMM_ARITH) begin
-            if(instr_in[31:12] == 0) begin
+        excep_out = excep_in;
+        if(excep_in == `EX_NONE) begin
+            if(instr_in[1:0] != 2'b11)
+                excep_out = `EX_ILLEGAL_INSTR;
+            //Integer Computational Instructions
+            else if(op == `OP_IMM_ARITH) begin
+                if(instr_in[31:12] == 0) begin
+                    rd_addr = rd;
+                    rs1_addr = rs1;
+                    op1 = rs1_data;
+                    op2 = imm_I;
+                    funct = f3;
+                    variant = f7[5];
+                end
+                else
+                    nop_instr = 1;
+            end
+            else if(op == `OP_LUI || op == `OP_AUIPC) begin
+                rd_addr = rd;
+                op2 = imm_U;
+            end
+            else if(op == `OP_AUIPC) begin
+                rd_addr = rd;
+                rs1_addr = rs1;
+                rs2_addr = rs2;
+                op1 = rs1_data;
+                op2 = rs2_data;
+                funct = f3;
+                variant = f7[5];
+            end
+            // Control transfer instructions
+            else if(op == `OP_JAL) begin
+                rd_addr = rd;
+                op2 = imm_J;
+            end
+            else if(op == `OP_JALR && f3 == 0) begin
+                rd_addr = rd;
+                rs1_addr = rs1;
+                op1 = rs1_data;
+                op2 = imm_I;
+            end
+            else if(op == `OP_BRANCH) begin
+                rs1_addr = rs1;
+                op1 = rs1_data;
+                rs2_addr = rs2;
+                op2 = rs2_data;
+                offset = imm_B;
+                funct = f3;
+            end
+            // Load Store Instructions
+            else if(op == `OP_LOAD) begin
                 rd_addr = rd;
                 rs1_addr = rs1;
                 op1 = rs1_data;
                 op2 = imm_I;
                 funct = f3;
-                variant = f7[5];
             end
-            else
-                nop_instr = 1;
-        end
-        else if(op == `OP_LUI || op == `OP_AUIPC) begin
-            rd_addr = rd;
-            op2 = imm_U;
-        end
-        else if(op == `OP_AUIPC) begin
-            rd_addr = rd;
-            rs1_addr = rs1;
-            rs2_addr = rs2;
-            op1 = rs1_data;
-            op2 = rs2_data;
-            funct = f3;
-            variant = f7[5];
-        end
-        else if(op == `OP_JAL) begin
-            rd_addr = rd;
-            op2 = imm_J;
-        end
-        else if(op == `OP_JALR && f3 == 0) begin
-            rd_addr = rd;
-            rs1_addr = rs1;
-            op1 = rs1_data;
-            op2 = imm_I;
-        end
-        else if(op == `OP_BRANCH) begin
-            rs1_addr = rs1;
-            op1 = rs1_data;
-            rs2_addr = rs2;
-            op2 = rs2_data;
-            offset = imm_B;
-            funct = f3;
-        end
-        else if(op == `OP_LOAD) begin
-            rd_addr = rd;
-            rs1_addr = rs1;
-            op1 = rs1_data;
-            op2 = imm_I;
-            funct = f3;
-        end
-        else if(op == `OP_STORE) begin
-            rs1_addr = rs1;
-            op1 = rs1_data;
-            rs2_addr = rs2;
-            op2 = rs2_data;
-            offset = imm_S;
-            funct = f3;
+            else if(op == `OP_STORE) begin
+                rs1_addr = rs1;
+                op1 = rs1_data;
+                rs2_addr = rs2;
+                op2 = rs2_data;
+                offset = imm_S;
+                funct = f3;
+            end
         end
     end
 

@@ -20,6 +20,7 @@ module tb;
     wire [`ADDR_SIZE : 0] addr;
     reg [`INSTR_SIZE : 0] data;
     reg strobe;
+    wire [`EX_WIDTH : 0] excep;
     fetch fetch
     (
         .reset          (reset),
@@ -33,7 +34,8 @@ module tb;
         .mem_rd_data    (data),
         .stall          (stall),
         .flush          (flush),
-        .flush_addr     (faddr)
+        .flush_addr     (faddr),
+        .excep          (excep)
     );
 
     wire [`REG_ADDR_SIZE : 0] rs1_addr;
@@ -53,10 +55,8 @@ module tb;
 
         //Interface Regfile
         .rs1_addr(rs1_addr),
-        // .rs1_enable(rs1_enable),
         .rs1_data(rs1_data),
         .rs2_addr(rs2_addr),
-        // .rs2_enable(rs2_enable),
         .rs2_data(rs2_data),
 
         .stall              (stall),
@@ -69,10 +69,8 @@ module tb;
         .reset      (reset),
 
         .rd_addr_1(rs1_addr),
-        // .rd_enable_1(rs1_enable),
         .rd_data_1(rs1_data),
         .rd_addr_2(rs2_addr),
-        // .rd_enable_2(rs2_enable),
         .rd_data_2(rs2_data)
     );
 
