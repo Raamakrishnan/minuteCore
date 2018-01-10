@@ -60,69 +60,71 @@ module decode(
         nop_instr = 0;
         opcode = op;
         excep_out = excep_in;
-        if(excep_in == `EX_NONE) begin
-            if(instr_in[1:0] != 2'b11)
-                excep_out = `EX_ILLEGAL_INSTR;
-            //Integer Computational Instructions
-            else if(op == `OP_IMM_ARITH) begin
-                if(instr_in[31:12] == 0) begin
+        if(pipeline_in_valid) begin
+            if(excep_in == `EX_NONE) begin
+                if(instr_in[1:0] != 2'b11)
+                    excep_out = `EX_ILLEGAL_INSTR;
+                //Integer Computational Instructions
+                else if(op == `OP_IMM_ARITH) begin
+                    if(instr_in[31:12] == 0) begin
+                        rd_addr = rd;
+                        rs1_addr = rs1;
+                        op1 = rs1_data;
+                        op2 = imm_I;
+                        funct = f3;
+                        variant = f7[5];
+                    end
+                    else
+                        nop_instr = 1;
+                end
+                else if(op == `OP_LUI || op == `OP_AUIPC) begin
+                    rd_addr = rd;
+                    op2 = imm_U;
+                end
+                else if(op == `OP_AUIPC) begin
+                    rd_addr = rd;
+                    rs1_addr = rs1;
+                    rs2_addr = rs2;
+                    op1 = rs1_data;
+                    op2 = rs2_data;
+                    funct = f3;
+                    variant = f7[5];
+                end
+                // Control transfer instructions
+                else if(op == `OP_JAL) begin
+                    rd_addr = rd;
+                    op2 = imm_J;
+                end
+                else if(op == `OP_JALR && f3 == 0) begin
+                    rd_addr = rd;
+                    rs1_addr = rs1;
+                    op1 = rs1_data;
+                    op2 = imm_I;
+                end
+                else if(op == `OP_BRANCH) begin
+                    rs1_addr = rs1;
+                    op1 = rs1_data;
+                    rs2_addr = rs2;
+                    op2 = rs2_data;
+                    offset = imm_B;
+                    funct = f3;
+                end
+                // Load Store Instructions
+                else if(op == `OP_LOAD) begin
                     rd_addr = rd;
                     rs1_addr = rs1;
                     op1 = rs1_data;
                     op2 = imm_I;
                     funct = f3;
-                    variant = f7[5];
                 end
-                else
-                    nop_instr = 1;
-            end
-            else if(op == `OP_LUI || op == `OP_AUIPC) begin
-                rd_addr = rd;
-                op2 = imm_U;
-            end
-            else if(op == `OP_AUIPC) begin
-                rd_addr = rd;
-                rs1_addr = rs1;
-                rs2_addr = rs2;
-                op1 = rs1_data;
-                op2 = rs2_data;
-                funct = f3;
-                variant = f7[5];
-            end
-            // Control transfer instructions
-            else if(op == `OP_JAL) begin
-                rd_addr = rd;
-                op2 = imm_J;
-            end
-            else if(op == `OP_JALR && f3 == 0) begin
-                rd_addr = rd;
-                rs1_addr = rs1;
-                op1 = rs1_data;
-                op2 = imm_I;
-            end
-            else if(op == `OP_BRANCH) begin
-                rs1_addr = rs1;
-                op1 = rs1_data;
-                rs2_addr = rs2;
-                op2 = rs2_data;
-                offset = imm_B;
-                funct = f3;
-            end
-            // Load Store Instructions
-            else if(op == `OP_LOAD) begin
-                rd_addr = rd;
-                rs1_addr = rs1;
-                op1 = rs1_data;
-                op2 = imm_I;
-                funct = f3;
-            end
-            else if(op == `OP_STORE) begin
-                rs1_addr = rs1;
-                op1 = rs1_data;
-                rs2_addr = rs2;
-                op2 = rs2_data;
-                offset = imm_S;
-                funct = f3;
+                else if(op == `OP_STORE) begin
+                    rs1_addr = rs1;
+                    op1 = rs1_data;
+                    rs2_addr = rs2;
+                    op2 = rs2_data;
+                    offset = imm_S;
+                    funct = f3;
+                end
             end
         end
     end
@@ -139,21 +141,17 @@ module decode(
         end
         else if(stall) begin
             PC_out <= PC_out;
-            `ifdef SIMULATE
-                instr_out <= instr_out;
-            `endif
             pipeline_out_valid <= pipeline_out_valid;
             `ifdef SIMULATE
+                instr_out <= instr_out;
                 $display("%0d\tDECODE: Stall", $time);
             `endif
         end
         else if(pipeline_in_valid) begin
             PC_out <= PC_in;
-            `ifdef SIMULATE
-                instr_out <= instr_in;
-            `endif
             pipeline_out_valid <= pipeline_in_valid;
             `ifdef SIMULATE
+                instr_out <= instr_in;
                 $strobe("%0d\t************DECODE Firing************", $time);
                 $strobe("%0d\tDECODE: PC: %h instr: %h op1: %h op2: %h", $time, PC_out, instr_out, op1, op2);
             `endif

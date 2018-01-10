@@ -35,7 +35,7 @@ module tb;
         .stall          (stall),
         .flush          (flush),
         .flush_addr     (faddr),
-        .excep          (excep)
+        .exception      (excep)
     );
 
     wire [`REG_ADDR_SIZE : 0] rs1_addr;
