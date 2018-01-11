@@ -13,7 +13,8 @@ module execute(
     `ifdef SIMULATE
     input wire [`INSTR_SIZE : 0] instr_in,
     `endif
-    input wire [`EX_WIDTH : 0] excep_in,
+    input wire [`EX_WIDTH : 0] exception_in,
+    input wire exception_in_valid,
     input wire pipeline_in_valid,
     input wire [4:0] opcode,
     input wire [2:0] funct,
@@ -28,19 +29,65 @@ module execute(
     output reg [`ADDR_SIZE : 0] PC_out,
     output reg [`INSTR_SIZE : 0] instr_out,
     `endif
+    output reg [`EX_WIDTH : 0] exception_out,
+    output reg exception_out_valid,
     output reg pipeline_out_valid,
+    output reg result,
+    output reg flush_out,
+    output reg flush_addr,
 
     input wire stall,
-    input wire flush
+    input wire flush_in
 );
 
+    always @(*) begin
+        if(pipeline_in_valid) begin
+            exception_out = exception_in;
+            exception_out_valid = exception_in_valid;
+            if(exception_in_valid == 0) begin
+                if(opcode == `OP_IMM_ARITH || opcode == `OP_ARITH) begin
+                    if(funct == `F3_ADD_SUB) begin
+                        if(variant == 0)        //ADD
+                            result = op1 + op2;
+                        else                    //SUB
+                            result = op1 - op2;
+                    end
+                    else if(funct == `F3_SLT_SLTI) begin
+                        result = (op1 < op2);
+                    end
+                    else if(funct == `F3_SLTU_SLTIU) begin
+                        result = (op1 < op2);
+                    end
+                    else if(funct == `F3_XOR_XORI) begin
+                        result = (op1 ^ op2);
+                    end
+                    else if(funct == `F3_OR_ORI) begin
+                        result = (op1 | op2);
+                    end
+                    else if(funct == `F3_AND_ANDI) begin
+                        result = (op1 & op2);
+                    end
+                    else if(funct == `F3_SLL_SLLI) begin
+                        result = op1 << op2[4:0];
+                    end
+                    else if(funct == `F3_SR_SRI) begin
+                        if(variant == 0)        //SRL
+                            result = op1 >> op2[4:0];
+                        else
+                            result = op1 >>> op2[4:0];
+                    end
+                end
+            end
+        end
+    end
+
     always @(posedge(clk)) begin
-        if(reset || flush) begin
+        if(reset || flush_in) begin
             pipeline_out_valid <= 0;
             `ifdef SIMULATE
                 if(reset)
                     $display("%0d\tEXECUTE: Reset", $time);
-                if(flush)
+                if(flush_in)
                     $display("%0d\tEXECUTE: Flush", $time);
             `endif
         end

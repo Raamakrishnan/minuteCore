@@ -53,8 +53,30 @@
 `define F3_FENCE        3'b000
 `define	F3_FENCEI       3'b001
 
+//////////////////// Instruction Type /////////////////
+`define INS_ARITH       1
+`define INS_LOAD        2
+`define INS_STORE       3
+`define INS_BRANCH      4
+`define INS_JAL         5
+`define INS_JALR        6
+`define INS_SYS         7
+`define INS_NOP         8
+
+
 /////////////////////// Exceptions ////////////////////
-`define EX_NONE                     0
-`define EX_INSTR_ADDR_MISALIGN      1
-`define EX_ILLEGAL_INSTR            2
-`define EX_WIDTH                    1
+`define EX_INSTR_ADDR_MISALIGN      4'd0
+`define EX_INSTR_ACCESS_FAULT       4'd1
+`define EX_ILLEGAL_INSTR            4'd2
+`define EX_BREAKPOINT               4'd3
+`define EX_LOAD_ADDR_MISALIGN       4'd4
+`define EX_LOAD_ACCESS_FAULT        4'd5
+`define EX_STORE_ADDR_MISALIGN      4'd6
+`define EX_STORE_ACCESS_FAULT       4'd7
+`define EX_ECALL_USER               4'd8
+`define EX_ECALL_SUPERVISOR         4'd9
+`define EX_ECALL_MACHINE            4'd11
+`define EX_INSTR_PAGEFAULT          4'd12
+`define EX_LOAD_PAGEFAULT           4'd13
+`define EX_STORE_PAGEFAULT          4'd15
+`define EX_WIDTH                    3

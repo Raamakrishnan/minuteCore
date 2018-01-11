@@ -11,7 +11,8 @@ module decode(
     //Interface pipeline in
     input wire [`ADDR_SIZE : 0] PC_in,
     input wire [`INSTR_SIZE : 0] instr_in,
-    input wire [`EX_WIDTH : 0] excep_in,
+    input wire [`EX_WIDTH : 0] exception_in,
+    input wire exception_in_valid,
     input wire pipeline_in_valid,
 
     //Interface pipeline out
@@ -19,7 +20,8 @@ module decode(
     `ifdef SIMULATE
     output reg [`INSTR_SIZE : 0] instr_out,
     `endif
-    output reg [`EX_WIDTH : 0] excep_out,
+    output reg [`EX_WIDTH : 0] exception_out,
+    output reg exception_out_valid,
     output reg pipeline_out_valid,
     output reg [4:0] opcode,
     output reg [2:0] funct,
@@ -57,13 +59,16 @@ module decode(
     //Instruction Decoding and Operand Fetch
     //TODO: check for illegal instructions
     always@(*) begin
-        nop_instr = 0;
-        opcode = op;
-        excep_out = excep_in;
         if(pipeline_in_valid) begin
-            if(excep_in == `EX_NONE) begin
-                if(instr_in[1:0] != 2'b11)
-                    excep_out = `EX_ILLEGAL_INSTR;
+            nop_instr = 0;
+            opcode = op;
+            exception_out = exception_in;
+            exception_out_valid = exception_out_valid;
+            if(exception_in_valid == 0) begin
+                if(instr_in[1:0] != 2'b11) begin
+                    exception_out = `EX_ILLEGAL_INSTR;
+                    exception_out_valid = 1;
+                end
                 //Integer Computational Instructions
                 else if(op == `OP_IMM_ARITH) begin
                     if(instr_in[31:12] == 0) begin
