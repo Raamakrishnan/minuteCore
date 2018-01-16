@@ -54,15 +54,15 @@
 `define	F3_FENCEI       3'b001
 
 //////////////////// Instruction Type /////////////////
-`define INS_ARITH       1
-`define INS_LOAD        2
-`define INS_STORE       3
-`define INS_BRANCH      4
-`define INS_JAL         5
-`define INS_JALR        6
-`define INS_SYS         7
-`define INS_NOP         8
-
+`define INS_ARITH       0
+`define INS_LOAD        1
+`define INS_STORE       2
+`define INS_BRANCH      3
+`define INS_JAL         4
+`define INS_JALR        5
+`define INS_SYS         6
+`define INS_NOP         7
+`define INS_WIDTH       2
 
 /////////////////////// Exceptions ////////////////////
 `define EX_INSTR_ADDR_MISALIGN      4'd0

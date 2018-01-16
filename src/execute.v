@@ -16,23 +16,26 @@ module execute(
     input wire [`EX_WIDTH : 0] exception_in,
     input wire exception_in_valid,
     input wire pipeline_in_valid,
-    input wire [4:0] opcode,
+    input wire [4:0] opcode_in,
     input wire [2:0] funct,
     input wire variant,
     input wire [`REG_DATA_SIZE : 0] op1,
     input wire [`REG_DATA_SIZE : 0] op2,
-    input wire [`REG_ADDR_SIZE : 0] rd_addr,
+    input wire [`REG_ADDR_SIZE : 0] rd_addr_in,
     input wire [`REG_DATA_SIZE : 0] offset,
-    input wire nop_instr,
+    input wire nop_instr_in,
 
     `ifdef SIMULATE
     output reg [`ADDR_SIZE : 0] PC_out,
     output reg [`INSTR_SIZE : 0] instr_out,
     `endif
+    output reg opcode_out,
+    output reg nop_instr_out,
     output reg [`EX_WIDTH : 0] exception_out,
     output reg exception_out_valid,
     output reg pipeline_out_valid,
     output reg result,
+    output reg rd_addr_out,
     output reg flush_out,
     output reg flush_addr,
 
@@ -44,8 +47,9 @@ module execute(
         if(pipeline_in_valid) begin
             exception_out = exception_in;
             exception_out_valid = exception_in_valid;
-            if(exception_in_valid == 0) begin
-                if(opcode == `OP_IMM_ARITH || opcode == `OP_ARITH) begin
+            flush_out = 0;
+            if(exception_in_valid == 0 && nop_instr_in == 0) begin
+                if(opcode_in == `OP_IMM_ARITH || opcode_in == `OP_ARITH) begin
                     if(funct == `F3_ADD_SUB) begin
                         if(variant == 0)        //ADD
                             result = op1 + op2;
@@ -77,6 +81,16 @@ module execute(
                             result = op1 >>> op2[4:0];
                     end
                 end
+                else if(opcode_in == `OP_JAL) begin
+                    result = PC_in + 'd4;
+                    flush_out = 1;
+                    flush_addr = PC_in + op2;
+                end
+                else if(opcode_in == `OP_JALR) begin
+                    result = PC_in + 'd4;
+                    flush_out = 1;
+                    flush_addr = (op1 + op2) & 1'b0;
+                end
             end
         end
     end
@@ -93,14 +107,18 @@ module execute(
         end
         else if(stall) begin
             pipeline_out_valid <= pipeline_out_valid;
+            opcode_out <= opcode_out;
+            rd_addr_out <= rd_addr_in;
             `ifdef SIMULATE
-                PC_out <= PC_in;
-                instr_out <= instr_in;
+                PC_out <= PC_out;
+                instr_out <= instr_out;
                 $display("%0d\tEXECUTE: Stall", $time);
             `endif
         end
         else if(pipeline_in_valid) begin
             pipeline_out_valid <= pipeline_in_valid;
+            opcode_out <= opcode_out;
+            rd_addr_out <= rd_addr_in;
             `ifdef SIMULATE
                 PC_out <= PC_in;
                 instr_out <= instr_in;

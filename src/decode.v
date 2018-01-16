@@ -24,6 +24,7 @@ module decode(
     output reg exception_out_valid,
     output reg pipeline_out_valid,
     output reg [4:0] opcode,
+    output reg [`INS_WIDTH : 0] instr_type,
     output reg [2:0] funct,
     output reg variant,
     output reg [`REG_DATA_SIZE : 0] op1,
@@ -54,7 +55,7 @@ module decode(
     wire [31:0] imm_S = signExtend12({instr_in[31:25], instr_in[11:7]});
     wire [31:0] imm_B = signExtend13({instr_in[31], instr_in[7], instr_in[30:25], instr_in[11:8], 1'b0});
     wire [31:0] imm_U = {instr_in[31:12], 12'b0};
-    wire [31:0] imm_J = signExtend21({instr_in[31], instr_in[19:12], instr_in[20], instr_in[30:21]});
+    wire [31:0] imm_J = signExtend21({instr_in[31], instr_in[19:12], instr_in[20], instr_in[30:21], 1'b0});
 
     //Instruction Decoding and Operand Fetch
     //TODO: check for illegal instructions
@@ -78,13 +79,16 @@ module decode(
                         op2 = imm_I;
                         funct = f3;
                         variant = f7[5];
+                        // instr_type = `INS_ARITH;
                     end
                     else
                         nop_instr = 1;
+                        // instr_type = `INS_NOP;
                 end
                 else if(op == `OP_LUI || op == `OP_AUIPC) begin
                     rd_addr = rd;
                     op2 = imm_U;
+                    // instr_type = `INS_ARITH;
                 end
                 else if(op == `OP_AUIPC) begin
                     rd_addr = rd;
@@ -94,17 +98,20 @@ module decode(
                     op2 = rs2_data;
                     funct = f3;
                     variant = f7[5];
+                    // instr_type = `INS_ARITH;
                 end
                 // Control transfer instructions
                 else if(op == `OP_JAL) begin
                     rd_addr = rd;
                     op2 = imm_J;
+                    // instr_type = `INS_JAL;
                 end
                 else if(op == `OP_JALR && f3 == 0) begin
                     rd_addr = rd;
                     rs1_addr = rs1;
                     op1 = rs1_data;
                     op2 = imm_I;
+                    // instr_type = `INS_JALR;
                 end
                 else if(op == `OP_BRANCH) begin
                     rs1_addr = rs1;
@@ -113,6 +120,7 @@ module decode(
                     op2 = rs2_data;
                     offset = imm_B;
                     funct = f3;
+                    // instr_type = `INS_BRANCH;
                 end
                 // Load Store Instructions
                 else if(op == `OP_LOAD) begin
@@ -121,6 +129,7 @@ module decode(
                     op1 = rs1_data;
                     op2 = imm_I;
                     funct = f3;
+                    // instr_type = `INS_LOAD;
                 end
                 else if(op == `OP_STORE) begin
                     rs1_addr = rs1;
@@ -129,6 +138,7 @@ module decode(
                     op2 = rs2_data;
                     offset = imm_S;
                     funct = f3;
+                    // instr_type = `INS_STORE;
                 end
             end
         end
