@@ -140,6 +140,8 @@ module decode(
                     funct = f3;
                     // instr_type = `INS_STORE;
                 end
+                else if(op == `OP_FENCE)
+                    nop_instr = 1;
             end
         end
     end
