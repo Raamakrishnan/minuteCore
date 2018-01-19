@@ -24,7 +24,7 @@ module decode(
     output reg exception_out_valid,
     output reg pipeline_out_valid,
     output reg [4:0] opcode,
-    output reg [`INS_WIDTH : 0] instr_type,
+    // output reg [`INS_WIDTH : 0] instr_type,
     output reg [2:0] funct,
     output reg variant,
     output reg [`REG_DATA_SIZE : 0] op1,

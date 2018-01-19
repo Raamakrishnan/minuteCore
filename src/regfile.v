@@ -27,7 +27,7 @@ module regfile(
     integer i;                 //iterator
     always@(posedge(clk)) begin
         if(reset) begin
-            for (i = 1; i < 32 ; i++ ) begin
+            for (i = 1; i < 32 ; i=i+1 ) begin
                 mem [i] <= 0;
             end
             `ifdef SIMULATE
