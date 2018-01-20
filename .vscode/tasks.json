@@ -6,7 +6,7 @@
         {
             "label": "iverilog",
             "type": "shell",
-            "command": "iverilog -o ./bin/out ./src/tb.v; vvp ./bin/out",
+            "command": "make build; make run",
             "group": {
                 "kind": "build",
                 "isDefault": true

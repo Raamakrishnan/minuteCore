@@ -4,6 +4,7 @@
         `include "./src/def_params.v"
     `endif
     `include "./src/minuteCore.v"
+    `include "./src/imem.v"
 `endif
 
 module tb_minuteCore();
