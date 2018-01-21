@@ -66,6 +66,7 @@ module minuteCore(
         .PC_in              (PC_IF_ID),
         .instr_in           (instr_IF_ID),
         .exception_in       (exception_IF_ID),
+        .exception_in_valid (exception_valid_IF_ID),
         .pipeline_in_valid  (pipeline_valid_IF_ID),
         .PC_out             (PC_ID_EXE),
 `ifdef SIMULATE 

@@ -53,6 +53,7 @@ module fetch(
             next_PC <= 0;
             pipeline_valid <= 0;
             mem_rd_enable <= 0;
+            exception_valid <= 0;
             `ifdef SIMULATE
                 $display("%0d\tFETCH: Reset", $time);
             `endif
@@ -62,6 +63,7 @@ module fetch(
             //TODO: check for instruction address alignment
             next_PC <= flush_addr;
             pipeline_valid <= 0;
+            exception_valid <= 0;
             mem_rd_enable <= 0;
             `ifdef SIMULATE
                 $display("%0d\tFETCH: Flush - Addr: %h", $time, flush_addr);
@@ -82,14 +84,16 @@ module fetch(
                 if(next_PC[1:0] != 0) begin
                     exception <= `EX_INSTR_ADDR_MISALIGN;
                     exception_valid <= 1;
-                end else
+                end
+                else begin
                     exception_valid <= 0;
+                end
                 PC <= next_PC;
                 next_PC <= next_PC + 'd4;
             end
             `ifdef SIMULATE
-                $display("%0d\t**************FETCH Firing**************", $time);
-                $display("%0d\tFETCH: PC: %h nextPC: %h instr: %h", $time, PC, next_PC, instr);
+                $strobe("%0d\t**************FETCH Firing**************", $time);
+                $strobe("%0d\tFETCH: PC: %h nextPC: %h instr: %h", $time, PC, next_PC, instr);
             `endif
         end
         else begin

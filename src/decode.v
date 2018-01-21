@@ -3,7 +3,7 @@
         `include "./src/def_params.v"
     `endif
 `endif
-
+`define DISPLAY(A) `ifdef SIMULATE $display("%0d\tDECODE:",$time,A); `endif
 module decode(
     input wire clk,
     input wire reset,
@@ -64,11 +64,12 @@ module decode(
             nop_instr = 0;
             opcode = op;
             exception_out = exception_in;
-            exception_out_valid = exception_out_valid;
+            exception_out_valid = exception_in_valid;
             if(exception_in_valid == 0) begin
                 if(instr_in[1:0] != 2'b11) begin
                     exception_out = `EX_ILLEGAL_INSTR;
                     exception_out_valid = 1;
+                    `DISPLAY("Illegal Instruction Exception")
                 end
                 //Integer Computational Instructions
                 else if(op == `OP_IMM_ARITH) begin
@@ -79,18 +80,18 @@ module decode(
                         op2 = imm_I;
                         funct = f3;
                         variant = f7[5];
-                        // instr_type = `INS_ARITH;
+                        `DISPLAY("Immediate Arith")
                     end
                     else
                         nop_instr = 1;
-                        // instr_type = `INS_NOP;
+                        `DISPLAY("NOP")
                 end
                 else if(op == `OP_LUI || op == `OP_AUIPC) begin
                     rd_addr = rd;
                     op2 = imm_U;
-                    // instr_type = `INS_ARITH;
+                    `DISPLAY("LUI or AUIPC")
                 end
-                else if(op == `OP_AUIPC) begin
+                else if(op == `OP_ARITH) begin
                     rd_addr = rd;
                     rs1_addr = rs1;
                     rs2_addr = rs2;
@@ -98,20 +99,20 @@ module decode(
                     op2 = rs2_data;
                     funct = f3;
                     variant = f7[5];
-                    // instr_type = `INS_ARITH;
+                    `DISPLAY("Arith")
                 end
                 // Control transfer instructions
                 else if(op == `OP_JAL) begin
                     rd_addr = rd;
                     op2 = imm_J;
-                    // instr_type = `INS_JAL;
+                    `DISPLAY("JAL")
                 end
                 else if(op == `OP_JALR && f3 == 0) begin
                     rd_addr = rd;
                     rs1_addr = rs1;
                     op1 = rs1_data;
                     op2 = imm_I;
-                    // instr_type = `INS_JALR;
+                    `DISPLAY("JALR")
                 end
                 else if(op == `OP_BRANCH) begin
                     rs1_addr = rs1;
@@ -120,7 +121,7 @@ module decode(
                     op2 = rs2_data;
                     offset = imm_B;
                     funct = f3;
-                    // instr_type = `INS_BRANCH;
+                    `DISPLAY("Branch")
                 end
                 // Load Store Instructions
                 else if(op == `OP_LOAD) begin
@@ -129,7 +130,7 @@ module decode(
                     op1 = rs1_data;
                     op2 = imm_I;
                     funct = f3;
-                    // instr_type = `INS_LOAD;
+                    `DISPLAY("Load")
                 end
                 else if(op == `OP_STORE) begin
                     rs1_addr = rs1;
@@ -138,10 +139,11 @@ module decode(
                     op2 = rs2_data;
                     offset = imm_S;
                     funct = f3;
-                    // instr_type = `INS_STORE;
+                    `DISPLAY("Store")
                 end
                 else if(op == `OP_FENCE)
                     nop_instr = 1;
+                    `DISPLAY("Fence")
             end
         end
     end
@@ -170,7 +172,8 @@ module decode(
             `ifdef SIMULATE
                 instr_out <= instr_in;
                 $strobe("%0d\t************DECODE Firing************", $time);
-                $strobe("%0d\tDECODE: PC: %h instr: %h op1: %h op2: %h", $time, PC_out, instr_out, op1, op2);
+                $strobe("%0d\tDECODE: PC: %h instr: %h op1: %h op2: %h offset: %h rd: r%d", $time, PC_out, instr_out, op1, op2, offset, rd_addr);
+                $strobe("%0d\tDECODE: Exception: %d(valid %b) NOP:%b", $time, exception_out, exception_out_valid, nop_instr);
             `endif
         end
     end

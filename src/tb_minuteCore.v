@@ -46,4 +46,11 @@ module tb_minuteCore();
         #100 $finish();
     end
 
+`ifdef SIMULATE
+    always@(clk) begin
+        if(clk)
+            $display("\n");
+    end
+`endif
+
 endmodule // tb_minuteCore
