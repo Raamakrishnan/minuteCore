@@ -13,17 +13,20 @@ module imem(
     output reg ready
 );
 
-    reg [`INSTR_SIZE : 0] mem [4:0];
+    reg [`INSTR_SIZE : 0] mem [0 : 16];
+    
+    wire [`INSTR_SIZE : 0] q = mem[addr[`ADDR_SIZE : 2]];  
 
-    always@(posedge(clk) or posedge(reset)) begin
-        if(reset) begin
-            $readmemh("imem.hex", mem);
-            ready <= 0;
-        end
-        else if(enable) begin
-            data <= mem[addr];
+    initial begin
+        $readmemh("./bin/imem.hex", mem);
+    end
+
+    always@(posedge(clk)) begin
+        ready <= 0;
+        if(enable) begin
+            data <= q;
+            $strobe("%0d\tIMEM: Addr: %h Data: %h", $time, addr, data);
             ready <= 1;
         end
     end
-
 endmodule // imem

@@ -1,4 +1,4 @@
-.PHONY: build run clean
+# Makefile - minuteCore
 
 build: 
 	@mkdir -p ./bin
@@ -8,5 +8,11 @@ build:
 
 run: ./bin/out
 	@echo "simulating verilog files"
-	@vvp ./bin/out
+	@vvp ./bin/out > ./bin/log
 	@echo "simulation complete"
+
+clean:
+	@rm -vrf ./bin/*
+	@echo "Cleaned"
+
+.PHONY: build run clean

@@ -42,7 +42,7 @@ module tb_minuteCore();
 
     initial begin
         clk = 1; reset = 1;
-        #10 reset = 1;
+        #10 reset = 0;
         #100 $finish();
     end
 

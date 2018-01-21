@@ -31,6 +31,7 @@ module fetch(
     reg [`INSTR_SIZE : 0] rg_data_from_mem;
     reg mem_valid;
 
+    // assign mem_rd_addr = next_PC;
     always@(mem_rd_enable or mem_rd_ready or reset or next_PC) begin
         if(reset) begin
             mem_valid <= 0;
@@ -41,7 +42,7 @@ module fetch(
             mem_valid <= 0;
         end
         else if(mem_rd_enable && mem_rd_ready) begin
-            rg_data_from_mem <= mem_rd_data;
+            instr <= mem_rd_data;
             mem_valid <= 1;
         end
     end
@@ -66,8 +67,8 @@ module fetch(
                 $display("%0d\tFETCH: Flush - Addr: %h", $time, flush_addr);
             `endif
         end
-        else if(mem_valid) begin
-            instr <= rg_data_from_mem;
+        else if(mem_rd_enable && mem_rd_ready) begin
+            // instr <= mem_rd_data;
             pipeline_valid <= 1;
             mem_rd_enable <= 0;
             if(stall) begin
