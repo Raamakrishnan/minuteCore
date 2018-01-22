@@ -35,10 +35,10 @@ module decode(
 
     //Interface RegFile
     //Readport 1
-    output reg [`REG_ADDR_SIZE : 0] rs1_addr,
+    output wire [`REG_ADDR_SIZE : 0] rs1_addr,
     input wire [`REG_DATA_SIZE : 0] rs1_data,
     //Readport 2
-    output reg [`REG_ADDR_SIZE : 0] rs2_addr,
+    output wire [`REG_ADDR_SIZE : 0] rs2_addr,
     input wire [`REG_DATA_SIZE : 0] rs2_data,
 
     input wire stall,
@@ -56,6 +56,9 @@ module decode(
     wire [31:0] imm_B = signExtend13({instr_in[31], instr_in[7], instr_in[30:25], instr_in[11:8], 1'b0});
     wire [31:0] imm_U = {instr_in[31:12], 12'b0};
     wire [31:0] imm_J = signExtend21({instr_in[31], instr_in[19:12], instr_in[20], instr_in[30:21], 1'b0});
+
+    assign rs1_addr = rs1;
+    assign rs2_addr = rs2;
 
     //Instruction Decoding and Operand Fetch
     //TODO: check for illegal instructions
@@ -75,7 +78,7 @@ module decode(
                 else if(op == `OP_IMM_ARITH) begin
                     if(instr_in[31:12] == 0) begin
                         rd_addr = rd;
-                        rs1_addr = rs1;
+                        // rs1_addr = rs1;
                         op1 = rs1_data;
                         op2 = imm_I;
                         funct = f3;
@@ -93,8 +96,8 @@ module decode(
                 end
                 else if(op == `OP_ARITH) begin
                     rd_addr = rd;
-                    rs1_addr = rs1;
-                    rs2_addr = rs2;
+                    // rs1_addr = rs1;
+                    // rs2_addr = rs2;
                     op1 = rs1_data;
                     op2 = rs2_data;
                     funct = f3;
@@ -109,15 +112,15 @@ module decode(
                 end
                 else if(op == `OP_JALR && f3 == 0) begin
                     rd_addr = rd;
-                    rs1_addr = rs1;
+                    // rs1_addr = rs1;
                     op1 = rs1_data;
                     op2 = imm_I;
                     `DISPLAY("JALR")
                 end
                 else if(op == `OP_BRANCH) begin
-                    rs1_addr = rs1;
+                    // rs1_addr = rs1;
                     op1 = rs1_data;
-                    rs2_addr = rs2;
+                    // rs2_addr = rs2;
                     op2 = rs2_data;
                     offset = imm_B;
                     funct = f3;
@@ -126,16 +129,16 @@ module decode(
                 // Load Store Instructions
                 else if(op == `OP_LOAD) begin
                     rd_addr = rd;
-                    rs1_addr = rs1;
+                    // rs1_addr = rs1;
                     op1 = rs1_data;
                     op2 = imm_I;
                     funct = f3;
                     `DISPLAY("Load")
                 end
                 else if(op == `OP_STORE) begin
-                    rs1_addr = rs1;
+                    // rs1_addr = rs1;
                     op1 = rs1_data;
-                    rs2_addr = rs2;
+                    // rs2_addr = rs2;
                     op2 = rs2_data;
                     offset = imm_S;
                     funct = f3;
