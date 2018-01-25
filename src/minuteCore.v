@@ -114,7 +114,7 @@ module minuteCore(
         .funct_in           (funct_ID_EXE),
         .variant            (variant_ID_EXE),
         .op1                (op1_ID_EXE),
-        .op2                (op1_ID_EXE),
+        .op2                (op2_ID_EXE),
         .rd_addr_in         (rd_addr_ID_EXE),
         .offset             (offset_ID_EXE),
         .nop_instr_in       (nop_instr_ID_EXE)

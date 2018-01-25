@@ -3,7 +3,7 @@
         `include "./src/def_params.v"
     `endif
 `endif
-
+`define DISPLAY(A) `ifdef SIMULATE $display("%0d\tEXECUTE: ",$time,A); `endif
 module execute(
     input clk,
     input reset,
@@ -45,72 +45,84 @@ module execute(
     input wire flush_in
 );
 
+    reg exception_out_valid_rg, flush_out_rg, nop_instr_rg;
+    reg [`EX_WIDTH : 0] exception_out_rg;
+    reg [`REG_DATA_SIZE : 0] result_rg;
+    reg [`ADDR_SIZE : 0] flush_addr_rg;
+    reg [`ADDR_SIZE : 0] store_addr_rg;
+
     always @(*) begin
         if(pipeline_in_valid) begin
-            exception_out = exception_in;
-            exception_out_valid = exception_in_valid;
-            flush_out = 0;
+            exception_out_rg = exception_in;
+            exception_out_valid_rg = exception_in_valid;
+            flush_out_rg = 0;
             if(exception_in_valid == 0 && nop_instr_in == 0) begin
                 if(opcode_in == `OP_IMM_ARITH || opcode_in == `OP_ARITH) begin
                     if(funct_in == `F3_ADD_SUB) begin
                         if(variant == 0)        //ADD
-                            result = op1 + op2;
+                            result_rg = op1 + op2;
                         else                    //SUB
-                            result = op1 - op2;
+                            result_rg = op1 - op2;
                     end
                     else if(funct_in == `F3_SLT_SLTI) begin
-                        result = (op1 < op2);
+                        result_rg = (op1 < op2);
                     end
                     else if(funct_in == `F3_SLTU_SLTIU) begin
-                        result = (op1 < op2);
+                        result_rg = (op1 < op2);
                     end
                     else if(funct_in == `F3_XOR_XORI) begin
-                        result = (op1 ^ op2);
+                        result_rg = (op1 ^ op2);
                     end
                     else if(funct_in == `F3_OR_ORI) begin
-                        result = (op1 | op2);
+                        result_rg = (op1 | op2);
                     end
                     else if(funct_in == `F3_AND_ANDI) begin
-                        result = (op1 & op2);
+                        result_rg = (op1 & op2);
                     end
                     else if(funct_in == `F3_SLL_SLLI) begin
-                        result = op1 << op2[4:0];
+                        result_rg = op1 << op2[4:0];
                     end
                     else if(funct_in == `F3_SR_SRI) begin
                         if(variant == 0)        //SRL
-                            result = op1 >> op2[4:0];
+                            result_rg = op1 >> op2[4:0];
                         else
-                            result = op1 >>> op2[4:0];
+                            result_rg = op1 >>> op2[4:0];
                     end
                 end
+                else if(opcode_in == `OP_LUI) begin
+                    result_rg = op2;
+                end
+                else if(opcode_in == `OP_AUIPC) begin
+                    result_rg = (PC_in + op2) & 12'b0;
+                end
                 else if(opcode_in == `OP_JAL) begin
-                    result = PC_in + 'd4;
-                    flush_out = 1;
-                    flush_addr = PC_in + op2;
+                    result_rg = PC_in + 'd4;
+                    flush_out_rg = 1;
+                    flush_addr_rg = PC_in + op2;
                 end
                 else if(opcode_in == `OP_JALR) begin
-                    result = PC_in + 'd4;
-                    flush_out = 1;
-                    flush_addr = (op1 + op2) & 1'b0;
+                    result_rg = PC_in + 'd4;
+                    flush_out_rg = 1;
+                    flush_addr_rg = (op1 + op2) & 1'b0;
                 end
                 else if(opcode_in == `OP_BRANCH) begin
-                    flush_addr = PC_in + offset;
+                    flush_addr_rg = PC_in + offset;
                     case (funct_in)
-                        `F3_BEQ:  flush_out = (op1 == op2);
-                        `F3_BNE:  flush_out = (op1 != op2);
-                        `F3_BLT:  flush_out = (op1 < op2);
-                        `F3_BLTU: flush_out = ($signed(op1) < $signed(op2));
-                        `F3_BGE:  flush_out = (op1 >= op2);
-                        `F3_BGEU: flush_out = ($signed(op1) >= $signed(op2));
-                        default:  flush_out = 0;
+                        `F3_BEQ:  flush_out_rg = (op1 == op2);
+                        `F3_BNE:  flush_out_rg = (op1 != op2);
+                        `F3_BLT:  flush_out_rg = (op1 < op2);
+                        `F3_BLTU: flush_out_rg = ($signed(op1) < $signed(op2));
+                        `F3_BGE:  flush_out_rg = (op1 >= op2);
+                        `F3_BGEU: flush_out_rg = ($signed(op1) >= $signed(op2));
+                        default:  flush_out_rg = 0;
                     endcase
                 end
                 else if(opcode_in == `OP_LOAD) begin
-                    result = op1 + op2;
+                    result_rg = op1 + op2;
                 end
                 else if(opcode_in == `OP_STORE) begin
-                    result = op2;
-                    store_addr = op1 + offset;
+                    result_rg = op2;
+                    store_addr_rg = op1 + offset;
                 end
             end
         end
@@ -139,8 +151,7 @@ module execute(
             `ifdef SIMULATE
                 PC_out <= PC_in;
                 instr_out <= instr_in;
-                $strobe("%0d\t************EXECUTE Firing************", $time);
-                $strobe("%0d\tEXECUTE: PC: %h instr: %h", $time, PC_out, instr_out);
+                printDebug;
             `endif
         end
     end
@@ -148,10 +159,44 @@ module execute(
     task advancePipeline;
         begin
             pipeline_out_valid <= pipeline_in_valid;
-            opcode_out <= opcode_out;
+            opcode_out <= opcode_in;
             rd_addr_out <= rd_addr_in;
-            funct_out <= flush_in;
+            funct_out <= funct_in;
+            exception_out <= exception_out_rg;
+            exception_out_valid <= exception_out_valid_rg;
+            result <= result_rg;
+            nop_instr_out <= nop_instr_in;
+            store_addr <= store_addr_rg;
+            flush_out <= flush_out_rg;
+            flush_addr <= flush_addr_rg;
         end
     endtask
+
+`ifdef SIMULATE
+    task printDebug;
+    begin
+        $strobe("%0d\t************EXECUTE Firing************", $time);
+        case (opcode_in)
+            `OP_ARITH: `DISPLAY("OP: Arith")
+            `OP_IMM_ARITH:
+                if(!nop_instr_in)
+                    `DISPLAY("OP: Imm Arith")
+                else
+                    `DISPLAY("OP: NOP")
+            `OP_AUIPC: `DISPLAY("OP: AUIPC")
+            `OP_LUI: `DISPLAY("OP: LUI")
+            `OP_BRANCH: `DISPLAY("OP: Branch")
+            `OP_FENCE: `DISPLAY("OP: Fence")
+            `OP_JAL: `DISPLAY("OP: JAL")
+            `OP_JALR: `DISPLAY("OP: JALR")
+            `OP_LOAD: `DISPLAY("OP: LOAD")
+            `OP_STORE: `DISPLAY("OP: Store")
+            default: `DISPLAY("OP: Unknown")
+        endcase
+        $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h ", $time, PC_out, instr_out, result);
+        $strobe("%0d\tEXECUTE: Exception: %d(valid %b)", $time, exception_out, exception_out_valid);
+    end
+    endtask
+`endif
 
 endmodule // execute
