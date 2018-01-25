@@ -1,5 +1,5 @@
 *.dump
 *.log
 bin/
-**/build/**
+build/
 *.o
