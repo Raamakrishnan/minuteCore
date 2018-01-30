@@ -36,7 +36,7 @@ module execute(
     output reg exception_out_valid,
     output reg pipeline_out_valid,
     output reg [`REG_DATA_SIZE : 0] result,
-    output reg [`ADDR_SIZE : 0] store_addr,
+    output reg [`ADDR_SIZE : 0] addr,
     output reg [`REG_ADDR_SIZE : 0] rd_addr_out,
     output reg flush_out,
     output reg [`ADDR_SIZE : 0] flush_addr,
@@ -49,7 +49,7 @@ module execute(
     reg [`EX_WIDTH : 0] exception_out_rg;
     reg [`REG_DATA_SIZE : 0] result_rg;
     reg [`ADDR_SIZE : 0] flush_addr_rg;
-    reg [`ADDR_SIZE : 0] store_addr_rg;
+    reg [`ADDR_SIZE : 0] addr_rg;
 
     always @(*) begin
         if(pipeline_in_valid) begin
@@ -122,7 +122,7 @@ module execute(
                 end
                 else if(opcode_in == `OP_STORE) begin
                     result_rg = op2;
-                    store_addr_rg = op1 + offset;
+                    addr_rg = op1 + offset;
                 end
             end
         end
@@ -139,7 +139,7 @@ module execute(
             `endif
         end
         else if(stall) begin
-            advancePipeline;
+            pipeline_out_valid <= pipeline_out_valid;
             `ifdef SIMULATE
                 PC_out <= PC_out;
                 instr_out <= instr_out;
@@ -166,7 +166,7 @@ module execute(
             exception_out_valid <= exception_out_valid_rg;
             result <= result_rg;
             nop_instr_out <= nop_instr_in;
-            store_addr <= store_addr_rg;
+            addr <= addr_rg;
             flush_out <= flush_out_rg;
             flush_addr <= flush_addr_rg;
         end
