@@ -5,6 +5,7 @@
     `endif
     `include "./src/minuteCore.v"
     `include "./src/imem.v"
+    `include "./src/dmem.v"
 `endif
 
 module tb_minuteCore();
@@ -16,6 +17,13 @@ module tb_minuteCore();
     wire imem_rd_enable;
     wire [`INSTR_SIZE : 0] imem_rd_data;
     wire imem_rd_ready;
+    wire [`ADDR_SIZE : 0] dmem_addr;
+    wire dmem_r_enable;
+    wire dmem_w_enable;
+    wire [`INSTR_SIZE : 0] dmem_r_data;
+    wire [`INSTR_SIZE : 0] dmem_w_data;
+    wire dmem_ready;
+    reg finish;
 
     minuteCore minuteCore(
         .clk            (clk),
@@ -23,7 +31,13 @@ module tb_minuteCore();
         .imem_rd_addr   (imem_rd_addr),
         .imem_rd_enable (imem_rd_enable),
         .imem_rd_data   (imem_rd_data),
-        .imem_rd_ready  (imem_rd_ready)
+        .imem_rd_ready  (imem_rd_ready),
+        .dmem_addr      (dmem_addr),
+        .dmem_r_enable  (dmem_r_enable),
+        .dmem_w_enable  (dmem_w_enable),
+        .dmem_r_data    (dmem_r_data),
+        .dmem_w_data    (dmem_w_data),
+        .dmem_ready     (dmem_ready)
     );
 
     imem imem(
@@ -35,15 +49,28 @@ module tb_minuteCore();
         .ready          (imem_rd_ready)
     );
 
+    dmem dmem(
+        .clk            (clk),
+        .reset          (reset),
+        .addr           (dmem_addr),
+        .r_enable       (dmem_r_enable),
+        .w_enable       (dmem_w_enable),
+        .r_data         (dmem_r_data),
+        .w_data         (dmem_w_data),
+        .ready          (dmem_ready),
+        .finish         (finish)
+    );
+
     initial begin
         $dumpfile("./bin/wave.vcd");
         $dumpvars(0, tb_minuteCore);
     end
 
     initial begin
-        clk = 1; reset = 1;
+        clk = 1; reset = 1; finish = 0;
         #10 reset = 0;
-        #100 $finish();
+        #150 finish = 1;
+        $finish();
     end
 
 `ifdef SIMULATE

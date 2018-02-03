@@ -6,4 +6,4 @@ _start:
     nop
     nop
     nop
-    sw	zero, 0(zero)
+    sw	x2, 0(x0)

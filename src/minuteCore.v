@@ -6,6 +6,7 @@
     `include "./src/decode.v"
     `include "./src/regfile.v"
     `include "./src/execute.v"
+    `include "./src/memory.v"
 `endif
 
 module minuteCore(
@@ -15,7 +16,14 @@ module minuteCore(
     output wire [ `ADDR_SIZE : 0] imem_rd_addr,
     output wire imem_rd_enable,
     input wire [`INSTR_SIZE : 0] imem_rd_data,
-    input wire imem_rd_ready
+    input wire imem_rd_ready,
+    //DMem interface
+    output wire [`ADDR_SIZE : 0] dmem_addr,
+    output wire dmem_r_enable,
+    output wire dmem_w_enable,
+    input wire [`INSTR_SIZE : 0] dmem_r_data,
+    output wire [`INSTR_SIZE : 0] dmem_w_data,
+    input wire dmem_ready
 );
 
     wire [`ADDR_SIZE : 0] PC_IF_ID;
@@ -100,6 +108,20 @@ module minuteCore(
         .rd_data_2  (rs2_data_ID_RF)
     );
 
+    wire [`ADDR_SIZE : 0] PC_EXE_MEM;
+    wire [`INSTR_SIZE : 0] instr_EXE_MEM;
+    wire nop_instr_EXE_MEM;
+    wire [4:0] opcode_EXE_MEM;
+    wire [2:0] funct_EXE_MEM;
+    wire [`EX_WIDTH : 0] exception_EXE_MEM;
+    wire exception_valid_EXE_MEM;
+    wire [`REG_DATA_SIZE : 0] result_EXE_MEM;
+    wire [`ADDR_SIZE : 0] addr_EXE_MEM;
+    wire flush_out_EXE;
+    wire [`ADDR_SIZE : 0] flush_addr_out_EXE;
+    wire [`REG_ADDR_SIZE : 0] rd_addr_EXE_MEM;
+    wire pipeline_valid_EXE_MEM;
+
     execute execute(
         .clk                (clk),
         .reset              (reset),
@@ -117,7 +139,46 @@ module minuteCore(
         .op2                (op2_ID_EXE),
         .rd_addr_in         (rd_addr_ID_EXE),
         .offset             (offset_ID_EXE),
-        .nop_instr_in       (nop_instr_ID_EXE)
+        .nop_instr_in       (nop_instr_ID_EXE),
+`ifdef SIMULATE
+        .PC_out             (PC_EXE_MEM),
+        .instr_out          (instr_EXE_MEM),
+`endif
+        .opcode_out         (opcode_EXE_MEM),
+        .funct_out          (funct_EXE_MEM),
+        .nop_instr_out      (nop_instr_EXE_MEM),
+        .exception_out      (exception_EXE_MEM),
+        .exception_out_valid(exception_valid_EXE_MEM),
+        .pipeline_out_valid (pipeline_valid_EXE_MEM),
+        .result             (result_EXE_MEM),
+        .addr               (addr_EXE_MEM),
+        .rd_addr_out        (rd_addr_EXE_MEM),
+        .flush_out          (flush_out_EXE),
+        .flush_addr         (flush_addr_out_EXE)
+    );
+
+    memory memory(
+        .clk                (clk),
+        .reset              (reset),
+`ifdef SIMULATE
+        .PC_in              (PC_EXE_MEM),
+        .instr_in           (instr_EXE_MEM),
+`endif
+        .opcode_in          (opcode_EXE_MEM),
+        .funct_in           (funct_EXE_MEM),
+        .nop_instr_in       (nop_instr_EXE_MEM),
+        .exception_in       (exception_EXE_MEM),
+        .exception_in_valid (exception_valid_EXE_MEM),
+        .pipeline_in_valid  (pipeline_valid_EXE_MEM),
+        .result_in          (result_EXE_MEM),
+        .addr               (addr_EXE_MEM),
+        .rd_addr_in         (rd_addr_EXE_MEM),
+        .mem_addr           (dmem_addr),
+        .mem_wr_data        (dmem_w_data),
+        .mem_wr_enable      (dmem_w_enable),
+        .mem_rd_data        (dmem_r_data),
+        .mem_rd_enable      (dmem_r_enable),
+        .mem_rd_ready       (dmem_ready)
     );
 
 endmodule // minuteCore

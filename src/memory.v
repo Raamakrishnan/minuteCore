@@ -57,7 +57,7 @@ module memory(
     always@(*) begin
         if(pipeline_in_valid) begin
             mem_rd_enable = 0;
-            mem_wr_enable = 1;
+            // mem_wr_enable = 0;
             load_wait = 0;
             stall_out = 0;
             if(exception_in_valid) begin
@@ -71,8 +71,7 @@ module memory(
                 stall_out = 1;
             end
             else if(opcode_in == `OP_STORE) begin
-                mem_addr = addr;
-                mem_wr_enable = 1;
+                // mem_wr_enable = 1;
             end
             else begin
 
@@ -83,6 +82,7 @@ module memory(
     always@(posedge(clk)) begin
         if(reset) begin
             pipeline_out_valid <= 0;
+            mem_wr_enable <= 0;
             `DISPLAY("Reset")
         end
         else if(flush) begin
@@ -94,10 +94,16 @@ module memory(
             `DISPLAY("Stall")
         end
         else if(pipeline_in_valid) begin
+            mem_wr_enable <= 0;
             if(opcode_in == `OP_LOAD) begin
                 if(load_wait == 1 && mem_rd_ready == 1) begin
                     result_out <= mem_rd_data;
                 end
+            end
+            else if(opcode_in == `OP_STORE) begin
+                mem_addr <= addr;
+                mem_wr_data <= result_in;
+                mem_wr_enable <= 1;
             end
             else begin
                 result_out <= result_in;
