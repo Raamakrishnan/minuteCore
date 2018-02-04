@@ -53,7 +53,7 @@ ${PROJECT}/${PROJECT}.imem: ${PROJECT}/${PROJECT}.bin
 	riscv32-unknown-elf-objcopy -O binary --only-section=.text $< $@
 	
 ${PROJECT}/${PROJECT}.dmem: ${PROJECT}/${PROJECT}.bin
-	riscv32-unknown-elf-objcopy -O binary --pad-to=0x10001000 --only-section=DATA $< $@
+	riscv32-unknown-elf-objcopy -O binary --pad-to=0x10000000 --only-section=.data $< $@
 
 ${PROJECT}/${PROJECT}.bin: ${OBJECT_FILES}
 	riscv32-unknown-elf-ld -o $@ -T prog-link.ld $^

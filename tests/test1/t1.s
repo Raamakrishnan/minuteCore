@@ -7,3 +7,7 @@ _start:
     nop
     nop
     sw	zero, 0(zero)
+    
+.data
+	.dword 0x12345
+	.dword 0x67890
