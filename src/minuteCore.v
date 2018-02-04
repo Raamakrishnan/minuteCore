@@ -121,6 +121,7 @@ module minuteCore(
     wire [`ADDR_SIZE : 0] flush_addr_out_EXE;
     wire [`REG_ADDR_SIZE : 0] rd_addr_EXE_MEM;
     wire pipeline_valid_EXE_MEM;
+    wire stall_EXE;
 
     execute execute(
         .clk                (clk),
@@ -154,8 +155,11 @@ module minuteCore(
         .addr               (addr_EXE_MEM),
         .rd_addr_out        (rd_addr_EXE_MEM),
         .flush_out          (flush_out_EXE),
-        .flush_addr         (flush_addr_out_EXE)
+        .flush_addr         (flush_addr_out_EXE),
+        .stall              (stall_EXE)
     );
+
+    wire stall_MEM_out;
 
     memory memory(
         .clk                (clk),
@@ -178,7 +182,12 @@ module minuteCore(
         .mem_wr_enable      (dmem_w_enable),
         .mem_rd_data        (dmem_r_data),
         .mem_rd_enable      (dmem_r_enable),
-        .mem_rd_ready       (dmem_ready)
+        .mem_rd_ready       (dmem_ready),
+        .stall_out          (stall_MEM_out)
     );
+
+    assign stall_IF = stall_MEM_out;
+    assign stall_ID = stall_MEM_out;
+    assign stall_EXE = stall_MEM_out;
 
 endmodule // minuteCore

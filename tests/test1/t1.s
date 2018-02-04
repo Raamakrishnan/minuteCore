@@ -1,6 +1,10 @@
 .text
 .global _start
 _start:
+    lw x1, 0(zero)
+    nop
+    nop
+    nop
     addi x2, x0, 0x01
     nop
     nop

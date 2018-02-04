@@ -118,7 +118,7 @@ module execute(
                     endcase
                 end
                 else if(opcode_in == `OP_LOAD) begin
-                    result_rg = op1 + op2;
+                    addr_rg = op1 + op2;
                 end
                 else if(opcode_in == `OP_STORE) begin
                     result_rg = op2;
@@ -193,7 +193,7 @@ module execute(
             `OP_STORE: `DISPLAY("OP: Store")
             default: `DISPLAY("OP: Unknown")
         endcase
-        $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h ", $time, PC_out, instr_out, result);
+        $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h rd: r%d", $time, PC_out, instr_out, result, rd_addr_out);
         $strobe("%0d\tEXECUTE: Exception: %d(valid %b)", $time, exception_out, exception_out_valid);
     end
     endtask

@@ -52,14 +52,11 @@ module memory(
     reg [`EX_WIDTH : 0] exception_out_rg;
     reg exception_out_valid_rg;
 
-    reg load_wait = 0;
+    // reg loaded;
 
     always@(*) begin
         if(pipeline_in_valid) begin
             mem_rd_enable = 0;
-            // mem_wr_enable = 0;
-            load_wait = 0;
-            stall_out = 0;
             if(exception_in_valid) begin
                 exception_out_valid_rg = exception_in_valid;
                 exception_out_rg = exception_in;
@@ -67,8 +64,6 @@ module memory(
             else if(opcode_in == `OP_LOAD) begin
                 mem_addr = addr;
                 mem_rd_enable = 1;
-                load_wait = 1;
-                stall_out = 1;
             end
             else if(opcode_in == `OP_STORE) begin
                 // mem_wr_enable = 1;
@@ -79,15 +74,22 @@ module memory(
         end
     end
 
+    always@(*) begin
+        stall_out = 0;
+        if(mem_rd_enable && !mem_rd_ready)  stall_out = 1;
+        else if(mem_rd_enable && mem_rd_ready)  stall_out = 0;
+    end
+
     always@(posedge(clk)) begin
-        if(reset) begin
+        if(reset || flush) begin
             pipeline_out_valid <= 0;
             mem_wr_enable <= 0;
-            `DISPLAY("Reset")
-        end
-        else if(flush) begin
-            pipeline_out_valid <= 0;
-            `DISPLAY("Flush")
+            mem_rd_enable <= 0;
+            // loaded <= 0;
+`ifdef SIMULATE
+            if(reset) begin `DISPLAY("Reset") end
+            if(flush) begin `DISPLAY("Flush") end
+`endif
         end
         else if(stall_in) begin
             pipeline_out_valid <= pipeline_out_valid;
@@ -96,29 +98,37 @@ module memory(
         else if(pipeline_in_valid) begin
             mem_wr_enable <= 0;
             if(opcode_in == `OP_LOAD) begin
-                if(load_wait == 1 && mem_rd_ready == 1) begin
+                if(mem_rd_enable && mem_rd_ready) begin
                     result_out <= mem_rd_data;
+                    advancePipeline;
                 end
+`ifdef SIMULATE
+                else begin
+                    `DISPLAY("OP: Load")
+                    `DISPLAY("Stalling for DMEM")
+                end
+`endif
             end
             else if(opcode_in == `OP_STORE) begin
                 mem_addr <= addr;
                 mem_wr_data <= result_in;
                 mem_wr_enable <= 1;
+                advancePipeline;
             end
             else begin
                 result_out <= result_in;
+                advancePipeline;
             end
-            advancePipeline;
-            `ifdef SIMULATE 
-            PC_out <= PC_in;
-            instr_out <= instr_in;
-            printDebug; 
-            `endif
         end
     end
 
     task advancePipeline;
     begin
+        `ifdef SIMULATE 
+        PC_out <= PC_in;
+        instr_out <= instr_in;
+        printDebug; 
+        `endif
         pipeline_out_valid <= pipeline_in_valid;
         rd_addr_out <= rd_addr_in;
         nop_instr_out <= nop_instr_in;
@@ -140,7 +150,7 @@ module memory(
                 default:    `DISPLAY("OP: Unkown")
             endcase
         end
-        $strobe("%0d\tMEMORY: PC: %h instr: %h", $time, PC_out, instr_out);
+        $strobe("%0d\tMEMORY: PC: %h instr: %h result: %h rd: r%d", $time, PC_out, instr_out, result_out, rd_addr_out);
         $strobe("%0d\tMEMORY: Exception: %d(valid %b)", $time, exception_out, exception_out_valid);
     end
     endtask
