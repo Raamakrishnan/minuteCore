@@ -1,8 +1,9 @@
 .text
 .global _start
 _start:
-    sb	zero, 0(zero)
-    lw zero, 0(zero)
+    lw x1, 0(zero)
+    sb zero, 1(zero)
+    lh x3, 1(zero)
     nop
     nop
     nop

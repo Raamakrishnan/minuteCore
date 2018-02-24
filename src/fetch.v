@@ -32,12 +32,12 @@ module fetch(
     reg mem_valid;
 
     // assign mem_rd_addr = next_PC;
-    always@(mem_rd_enable or mem_rd_ready or reset or next_PC) begin
+    always@(mem_rd_enable or mem_rd_ready or reset or next_PC or stall) begin
         if(reset) begin
             mem_valid <= 0;
         end
         else if(!mem_rd_enable) begin
-            mem_rd_addr <= next_PC;
+            mem_rd_addr <= (stall)? PC : next_PC;
             mem_rd_enable <= 1;
             mem_valid <= 0;
         end

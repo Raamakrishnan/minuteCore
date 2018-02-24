@@ -52,6 +52,7 @@ module memory(
 
     reg [`EX_WIDTH : 0] exception_out_rg;
     reg exception_out_valid_rg;
+    reg rg_wait;
 
     // reg loaded;
 
@@ -75,10 +76,10 @@ module memory(
         end
     end
 
-    always@(*) begin
+    always@(mem_rd_enable, mem_rd_ready, rg_wait, reset) begin
         stall_out = 0;
-        if(mem_rd_enable && !mem_rd_ready)  stall_out = 1;
-        else if(mem_rd_enable && mem_rd_ready)  stall_out = 0;
+        if(mem_rd_enable && !rg_wait)  stall_out = 1;
+        else if(mem_rd_ready && rg_wait)  stall_out = 0;
     end
 
     always@(posedge(clk)) begin
@@ -86,6 +87,7 @@ module memory(
             pipeline_out_valid <= 0;
             mem_wr_enable <= 0;
             mem_rd_enable <= 0;
+            rg_wait <= 0;
             // loaded <= 0;
 `ifdef SIMULATE
             if(reset) begin `DISPLAY("Reset") end
@@ -99,14 +101,16 @@ module memory(
         else if(pipeline_in_valid) begin
             mem_wr_enable <= 0;
             if(opcode_in == `OP_LOAD) begin
-                if(mem_rd_enable && mem_rd_ready) begin
+                if(mem_rd_enable && mem_rd_ready && rg_wait) begin
                     result_out <= adjustSize(mem_rd_data, funct_in);
+                    rg_wait <= 0;
                     advancePipeline;
                 end
 `ifdef SIMULATE
                 else begin
                     `DISPLAY("OP: Load")
                     `DISPLAY("Stalling for DMEM")
+                    rg_wait <= 1;
                 end
 `endif
             end
