@@ -40,6 +40,7 @@ module memory(
     output reg [`ADDR_SIZE : 0] mem_addr,
     output reg [`INSTR_SIZE : 0 ] mem_wr_data,
     output reg mem_wr_enable,
+    output reg [1:0] mem_wr_size,
     input wire [`INSTR_SIZE : 0 ] mem_rd_data,
     output reg mem_rd_enable,
     input wire mem_rd_ready,
@@ -99,7 +100,7 @@ module memory(
             mem_wr_enable <= 0;
             if(opcode_in == `OP_LOAD) begin
                 if(mem_rd_enable && mem_rd_ready) begin
-                    result_out <= mem_rd_data;
+                    result_out <= adjustSize(mem_rd_data, funct_in);
                     advancePipeline;
                 end
 `ifdef SIMULATE
@@ -113,6 +114,7 @@ module memory(
                 mem_addr <= addr;
                 mem_wr_data <= result_in;
                 mem_wr_enable <= 1;
+                mem_wr_size <= funct_in[1:0];
                 advancePipeline;
             end
             else begin
@@ -136,6 +138,16 @@ module memory(
         exception_out_valid <= exception_out_valid_rg;
     end
     endtask
+
+    function [31:0] adjustSize(input [31:0] data, input [2:0] width);
+        case (width)
+            3'b000: adjustSize = {{24{data[7]}}, data[7:0]};
+            3'b001: adjustSize = {{16{data[15]}}, data[15:0]};
+            3'b010: adjustSize = data;
+            3'b100: adjustSize = {{24{3'b0}}, data[7:0]};
+            3'b101: adjustSize = {{16{1'b0}}, data[15:0]};
+        endcase
+    endfunction
 
 `ifdef SIMULATE
     task printDebug;

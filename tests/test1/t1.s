@@ -1,10 +1,8 @@
 .text
 .global _start
 _start:
-    lw x1, 0(zero)
-    nop
-    nop
-    nop
+    lb x2, 3(zero)
+    lh x3, 2(zero)
     addi x2, x0, 0x01
     nop
     nop
@@ -13,5 +11,5 @@ _start:
     sw	zero, 0(zero)
     
 .data
-	.dword 0x12345
-	.dword 0x67890
+	.dword 0x1020304050607080
+	.dword 0x1020304050607080

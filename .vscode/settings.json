@@ -1,3 +1,4 @@
 {
-    "verilog.iverilog.arguments": "-Wall"
+    "verilog.linting.iverilog.arguments": "-Wall",
+    "verilog.linting.linter": "iverilog"
 }

@@ -21,6 +21,7 @@ module minuteCore(
     output wire [`ADDR_SIZE : 0] dmem_addr,
     output wire dmem_r_enable,
     output wire dmem_w_enable,
+    output wire [1:0] dmem_w_size,
     input wire [`INSTR_SIZE : 0] dmem_r_data,
     output wire [`INSTR_SIZE : 0] dmem_w_data,
     input wire dmem_ready
@@ -180,6 +181,7 @@ module minuteCore(
         .mem_addr           (dmem_addr),
         .mem_wr_data        (dmem_w_data),
         .mem_wr_enable      (dmem_w_enable),
+        .mem_wr_size        (dmem_w_size),
         .mem_rd_data        (dmem_r_data),
         .mem_rd_enable      (dmem_r_enable),
         .mem_rd_ready       (dmem_ready),

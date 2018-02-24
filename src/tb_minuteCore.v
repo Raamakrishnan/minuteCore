@@ -20,6 +20,7 @@ module tb_minuteCore();
     wire [`ADDR_SIZE : 0] dmem_addr;
     wire dmem_r_enable;
     wire dmem_w_enable;
+    wire [1:0] dmem_w_size;
     wire [`INSTR_SIZE : 0] dmem_r_data;
     wire [`INSTR_SIZE : 0] dmem_w_data;
     wire dmem_ready;
@@ -35,6 +36,7 @@ module tb_minuteCore();
         .dmem_addr      (dmem_addr),
         .dmem_r_enable  (dmem_r_enable),
         .dmem_w_enable  (dmem_w_enable),
+        .dmem_w_size    (dmem_w_size),
         .dmem_r_data    (dmem_r_data),
         .dmem_w_data    (dmem_w_data),
         .dmem_ready     (dmem_ready)
@@ -55,6 +57,7 @@ module tb_minuteCore();
         .addr           (dmem_addr),
         .r_enable       (dmem_r_enable),
         .w_enable       (dmem_w_enable),
+        .w_size         (dmem_w_size),
         .r_data         (dmem_r_data),
         .w_data         (dmem_w_data),
         .ready          (dmem_ready),
