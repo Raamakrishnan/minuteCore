@@ -21,6 +21,9 @@ module writeback(
     input wire exception_valid,
     input wire [`EX_WIDTH : 0] exception,
     input wire pipeline_valid,
+    input wire halt_in,
+
+    output reg halt_out,
 
     //RegFile interface
     output reg [`REG_ADDR_SIZE : 0] wr_addr,
@@ -47,10 +50,19 @@ module writeback(
     end
 
     always@(posedge(clk)) begin
-        if(pipeline_valid) begin
+        if(reset) begin
+            halt_out <= 0;
+`ifdef SIMULATE `DISPLAY("Reset")   `endif
+        end
+//         else if(flush) begin
+//             halt <= 0;
+// `ifdef SIMULATE `DISPLAY("Flush")   `endif
+//         end
+        else if(pipeline_valid) begin
 `ifdef SIMULATE
             printDebug;
 `endif
+            halt_out <= halt_in? 1 : halt_out;
         end
     end
 
@@ -58,6 +70,9 @@ module writeback(
     task printDebug;
     begin
         $strobe("%0d\t************WRITEBACK Firing************", $time);
+        if(halt_in)
+            `DISPLAY("HALT")
+        else begin
         case (opcode)
             `OP_ARITH: `DISPLAY("OP: Arith")
             `OP_IMM_ARITH:
@@ -78,6 +93,7 @@ module writeback(
         $strobe("%0d\tWRITEBACK: PC: %h instr: %h result: %h rd: r%d", $time, PC, instr, result, rd_addr);
         $strobe("%0d\tWRITEBACK: Exception: %d(valid %b)", $time, exception, exception_valid);
         end
+    end
     endtask
 `endif
 

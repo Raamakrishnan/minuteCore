@@ -40,6 +40,7 @@ module execute(
     output reg [`REG_ADDR_SIZE : 0] rd_addr_out,
     output reg flush_out,
     output reg [`ADDR_SIZE : 0] flush_addr,
+    output reg halt,
 
     input wire stall,
     input wire flush_in
@@ -50,12 +51,14 @@ module execute(
     reg [`REG_DATA_SIZE : 0] result_rg;
     reg [`ADDR_SIZE : 0] flush_addr_rg;
     reg [`ADDR_SIZE : 0] addr_rg;
+    reg halt_rg;
 
     always @(*) begin
         if(pipeline_in_valid) begin
             exception_out_rg = exception_in;
             exception_out_valid_rg = exception_in_valid;
             flush_out_rg = 0;
+            halt_rg = 0;
             if(exception_in_valid == 0 && nop_instr_in == 0) begin
                 if(opcode_in == `OP_IMM_ARITH || opcode_in == `OP_ARITH) begin
                     if(funct_in == `F3_ADD_SUB) begin
@@ -99,6 +102,7 @@ module execute(
                     result_rg = PC_in + 'd4;
                     flush_out_rg = 1;
                     flush_addr_rg = PC_in + op2;
+                    halt_rg = (op2 == 0)? 1:0;
                 end
                 else if(opcode_in == `OP_JALR) begin
                     result_rg = PC_in + 'd4;
@@ -131,6 +135,7 @@ module execute(
     always @(posedge(clk)) begin
         if(reset || flush_in) begin
             pipeline_out_valid <= 0;
+            halt <= 0;
             `ifdef SIMULATE
                 if(reset)
                     $display("%0d\tEXECUTE: Reset", $time);
@@ -169,6 +174,7 @@ module execute(
             addr <= addr_rg;
             flush_out <= flush_out_rg;
             flush_addr <= flush_addr_rg;
+            halt <= halt_rg;
         end
     endtask
 
@@ -194,7 +200,7 @@ module execute(
             default: `DISPLAY("OP: Unknown")
         endcase
         $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h rd: r%d", $time, PC_out, instr_out, result, rd_addr_out);
-        $strobe("%0d\tEXECUTE: Exception: %d(valid %b)", $time, exception_out, exception_out_valid);
+        $strobe("%0d\tEXECUTE: Exception: %d(valid %b) Halt: %b", $time, exception_out, exception_out_valid, halt);
     end
     endtask
 `endif

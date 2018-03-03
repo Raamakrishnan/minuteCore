@@ -13,8 +13,8 @@ _start:
     nop
     nop
     sw x3, 8(zero)
-    nop
-    nop
+end:
+    jal end
 .data
 	.dword 0x1020304050607080
 	.dword 0x1020304050607080

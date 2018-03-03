@@ -25,7 +25,9 @@ module minuteCore(
     output wire [1:0] dmem_w_size,
     input wire [`INSTR_SIZE : 0] dmem_r_data,
     output wire [`INSTR_SIZE : 0] dmem_w_data,
-    input wire dmem_ready
+    input wire dmem_ready,
+    //halt
+    output wire halt
 );
 
     wire [`ADDR_SIZE : 0] PC_IF_ID;
@@ -130,6 +132,7 @@ module minuteCore(
     wire [`ADDR_SIZE : 0] flush_addr_out_EXE;
     wire [`REG_ADDR_SIZE : 0] rd_addr_EXE_MEM;
     wire pipeline_valid_EXE_MEM;
+    wire halt_EXE_MEM;
     wire stall_EXE;
 
     execute execute(
@@ -165,6 +168,7 @@ module minuteCore(
         .rd_addr_out        (rd_addr_EXE_MEM),
         .flush_out          (flush_out_EXE),
         .flush_addr         (flush_addr_out_EXE),
+        .halt               (halt_EXE_MEM),
         .stall              (stall_EXE)
     );
 
@@ -178,6 +182,7 @@ module minuteCore(
     wire exception_valid_MEM_WB;
     wire [`EX_WIDTH : 0] exception_MEM_WB;
     wire pipeline_valid_MEM_WB;
+    wire halt_MEM_WB;
 
     memory memory(
         .clk                (clk),
@@ -195,6 +200,7 @@ module minuteCore(
         .result_in          (result_EXE_MEM),
         .addr               (addr_EXE_MEM),
         .rd_addr_in         (rd_addr_EXE_MEM),
+        .halt_in            (halt_EXE_MEM),
 `ifdef SIMULATE
         .PC_out             (PC_MEM_WB),
         .instr_out          (instr_MEM_WB),
@@ -205,6 +211,7 @@ module minuteCore(
         .rd_addr_out        (rd_addr_MEM_WB),
         .exception_out_valid(exception_valid_MEM_WB),
         .exception_out      (exception_MEM_WB),
+        .halt_out           (halt_MEM_WB),
         .pipeline_out_valid (pipeline_valid_MEM_WB),
         .mem_addr           (dmem_addr),
         .mem_wr_data        (dmem_w_data),
@@ -233,7 +240,9 @@ module minuteCore(
         .rd_addr            (rd_addr_MEM_WB),
         .exception_valid    (exception_valid_MEM_WB),
         .exception          (exception_MEM_WB),
+        .halt_in            (halt_MEM_WB),
         .pipeline_valid     (pipeline_valid_MEM_WB),
+        .halt_out           (halt),
         .wr_addr            (wr_addr_WB_RF),
         .wr_data            (wr_data_WB_RF),
         .wr_enable          (wr_enable_WB_RF)

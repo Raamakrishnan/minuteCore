@@ -25,6 +25,7 @@ module tb_minuteCore();
     wire [`INSTR_SIZE : 0] dmem_w_data;
     wire dmem_ready;
     reg finish;
+    wire halt;
 
     minuteCore minuteCore(
         .clk            (clk),
@@ -39,7 +40,8 @@ module tb_minuteCore();
         .dmem_w_size    (dmem_w_size),
         .dmem_r_data    (dmem_r_data),
         .dmem_w_data    (dmem_w_data),
-        .dmem_ready     (dmem_ready)
+        .dmem_ready     (dmem_ready),
+        .halt           (halt)
     );
 
     imem imem(
@@ -73,8 +75,11 @@ module tb_minuteCore();
         clk = 1; reset = 1; finish = 0;
         #10 reset = 0;
         #200 finish = 1;
-        $finish();
+        // $finish();
     end
+
+    always@(posedge(halt))
+        $finish();
 
 `ifdef SIMULATE
     always@(clk) begin

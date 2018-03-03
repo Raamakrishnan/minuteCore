@@ -23,6 +23,7 @@ module memory(
     input wire [`REG_DATA_SIZE : 0] result_in,
     input wire [`ADDR_SIZE : 0] addr,
     input wire [`REG_ADDR_SIZE : 0] rd_addr_in,
+    input wire halt_in,
 
     //Interface pipeline out
     `ifdef SIMULATE
@@ -36,6 +37,7 @@ module memory(
     output reg pipeline_out_valid,
     output reg [`EX_WIDTH : 0] exception_out,
     output reg exception_out_valid,
+    output reg halt_out,
 
     //Interface dmem
     output reg [`ADDR_SIZE : 0] mem_addr,
@@ -142,6 +144,7 @@ module memory(
         nop_instr_out <= nop_instr_in;
         exception_out <= exception_out_rg;
         exception_out_valid <= exception_out_valid_rg;
+        halt_out <= halt_in;
     end
     endtask
 
