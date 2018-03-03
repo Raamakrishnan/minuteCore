@@ -36,11 +36,16 @@ module regfile(
         end
         else if(wr_enable && wr_addr != 0) begin
             mem[wr_addr] <= wr_data;
+`ifdef SIMULATE
+            $strobe("%0d\tREGFILE: WRITE: rd%d: %h", $time, wr_addr, wr_data);
+`endif
         end
     end
 
     always@(negedge(clk)) begin
-        $strobe("%0d\tREGFILE: rs1: %h rs2: %h", $time, rd_addr_1, rd_addr_2);
+`ifdef SIMULATE
+        $strobe("%0d\tREGFILE: READ: rs1: %h rs2: %h", $time, rd_addr_1, rd_addr_2);
+`endif
         rd_data_1 <= (rd_addr_1 == 0)? 0 : mem[rd_addr_1];
         rd_data_2 <= (rd_addr_2 == 0)? 0 : mem[rd_addr_2];
     end

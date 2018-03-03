@@ -7,6 +7,7 @@
     `include "./src/regfile.v"
     `include "./src/execute.v"
     `include "./src/memory.v"
+    `include "./src/writeback.v"
 `endif
 
 module minuteCore(
@@ -100,13 +101,20 @@ module minuteCore(
         .flush              (flush_ID)
     );
 
+    wire [`REG_ADDR_SIZE : 0] wr_addr_WB_RF;
+    wire [`REG_DATA_SIZE : 0] wr_data_WB_RF;
+    wire wr_enable_WB_RF;
+
     regfile regfile(
         .clk        (clk),
         .reset      (reset),
         .rd_addr_1  (rs1_addr_ID_RF),
         .rd_data_1  (rs1_data_ID_RF),
         .rd_addr_2  (rs2_addr_ID_RF),
-        .rd_data_2  (rs2_data_ID_RF)
+        .rd_data_2  (rs2_data_ID_RF),
+        .wr_addr    (wr_addr_WB_RF),
+        .wr_data    (wr_data_WB_RF),
+        .wr_enable  (wr_enable_WB_RF)
     );
 
     wire [`ADDR_SIZE : 0] PC_EXE_MEM;
@@ -161,6 +169,15 @@ module minuteCore(
     );
 
     wire stall_MEM_out;
+    wire [`ADDR_SIZE : 0] PC_MEM_WB;
+    wire [`INSTR_SIZE : 0] instr_MEM_WB;
+    wire [4:0] opcode_MEM_WB;
+    wire nop_instr_MEM_WB;
+    wire [`REG_DATA_SIZE : 0] result_MEM_WB;
+    wire [`REG_ADDR_SIZE : 0] rd_addr_MEM_WB;
+    wire exception_valid_MEM_WB;
+    wire [`EX_WIDTH : 0] exception_MEM_WB;
+    wire pipeline_valid_MEM_WB;
 
     memory memory(
         .clk                (clk),
@@ -178,6 +195,17 @@ module minuteCore(
         .result_in          (result_EXE_MEM),
         .addr               (addr_EXE_MEM),
         .rd_addr_in         (rd_addr_EXE_MEM),
+`ifdef SIMULATE
+        .PC_out             (PC_MEM_WB),
+        .instr_out          (instr_MEM_WB),
+`endif
+        .opcode_out         (opcode_MEM_WB),
+        .nop_instr_out      (nop_instr_MEM_WB),
+        .result_out         (result_MEM_WB),
+        .rd_addr_out        (rd_addr_MEM_WB),
+        .exception_out_valid(exception_valid_MEM_WB),
+        .exception_out      (exception_MEM_WB),
+        .pipeline_out_valid (pipeline_valid_MEM_WB),
         .mem_addr           (dmem_addr),
         .mem_wr_data        (dmem_w_data),
         .mem_wr_enable      (dmem_w_enable),
@@ -191,5 +219,24 @@ module minuteCore(
     assign stall_IF = stall_MEM_out;
     assign stall_ID = stall_MEM_out;
     assign stall_EXE = stall_MEM_out;
+
+    writeback writeback(
+        .clk                (clk),
+        .reset              (reset),
+`ifdef SIMULATE
+        .PC                 (PC_MEM_WB),
+        .instr              (instr_MEM_WB),
+`endif
+        .opcode             (opcode_MEM_WB),
+        .nop_instr          (nop_instr_MEM_WB),
+        .result             (result_MEM_WB),
+        .rd_addr            (rd_addr_MEM_WB),
+        .exception_valid    (exception_valid_MEM_WB),
+        .exception          (exception_MEM_WB),
+        .pipeline_valid     (pipeline_valid_MEM_WB),
+        .wr_addr            (wr_addr_WB_RF),
+        .wr_data            (wr_data_WB_RF),
+        .wr_enable          (wr_enable_WB_RF)
+    );
 
 endmodule // minuteCore
