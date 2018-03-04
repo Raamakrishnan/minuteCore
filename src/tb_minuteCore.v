@@ -31,9 +31,9 @@ module tb_minuteCore();
         .clk            (clk),
         .reset          (reset),
         .imem_rd_addr   (imem_rd_addr),
-        .imem_rd_enable (imem_rd_enable),
+        // .imem_rd_enable (imem_rd_enable),
         .imem_rd_data   (imem_rd_data),
-        .imem_rd_ready  (imem_rd_ready),
+        // .imem_rd_ready  (imem_rd_ready),
         .dmem_addr      (dmem_addr),
         .dmem_r_enable  (dmem_r_enable),
         .dmem_w_enable  (dmem_w_enable),
@@ -48,9 +48,9 @@ module tb_minuteCore();
         .clk            (clk),
         .reset          (reset),
         .addr           (imem_rd_addr),
-        .enable         (imem_rd_enable),
-        .data           (imem_rd_data),
-        .ready          (imem_rd_ready)
+        // .enable         (imem_rd_enable),
+        .data           (imem_rd_data)
+        // .ready          (imem_rd_ready)
     );
 
     dmem dmem(
@@ -72,10 +72,8 @@ module tb_minuteCore();
     end
 
     initial begin
-        clk = 1; reset = 1; finish = 0;
+        clk = 1; reset = 1;
         #10 reset = 0;
-        #200 finish = 1;
-        // $finish();
     end
 
     always@(posedge(halt))

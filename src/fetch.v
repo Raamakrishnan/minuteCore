@@ -9,13 +9,13 @@ module fetch(
     input wire reset,
 
     //Interface with memory
-    output reg [ `ADDR_SIZE : 0] mem_rd_addr,
-    output reg mem_rd_enable,
+    output wire [ `ADDR_SIZE : 0] mem_rd_addr,
+    // output reg mem_rd_enable,
     input wire [`INSTR_SIZE : 0] mem_rd_data,
-    input wire mem_rd_ready,
+    // input wire mem_rd_ready,
 
     //Interface with pipeline
-    output reg [`INSTR_SIZE : 0] instr,
+    output wire [`INSTR_SIZE : 0] instr,
     output reg [ `ADDR_SIZE : 0] PC,
     output reg [`EX_WIDTH : 0] exception,
     output reg exception_valid,
@@ -29,30 +29,33 @@ module fetch(
 
     reg [`ADDR_SIZE : 0] next_PC;
     reg [`INSTR_SIZE : 0] rg_data_from_mem;
-    reg mem_valid;
+    reg [1:0] wait_rg;
+
+    assign mem_rd_addr = next_PC;
+    assign instr = mem_rd_data;
 
     // assign mem_rd_addr = next_PC;
-    always@(mem_rd_enable or mem_rd_ready or reset or next_PC or stall) begin
-        if(reset) begin
-            mem_valid <= 0;
-        end
-        else if(!mem_rd_enable) begin
-            mem_rd_addr <= (stall)? PC : next_PC;
-            mem_rd_enable <= 1;
-            mem_valid <= 0;
-        end
-        else if(mem_rd_enable && mem_rd_ready) begin
-            instr <= mem_rd_data;
-            mem_valid <= 1;
-        end
-    end
+    // always@(mem_rd_enable or mem_rd_ready or reset or next_PC or stall) begin
+    //     if(reset) begin
+    //         mem_valid <= 0;
+    //     end
+    //     else if(!mem_rd_enable) begin
+    //         mem_rd_addr <= (stall)? mem_rd_addr : next_PC;
+    //         mem_rd_enable <= 1;
+    //         mem_valid <= 0;
+    //     end
+    //     else if(mem_rd_enable && mem_rd_ready) begin
+    //         instr <= mem_rd_data;
+    //         mem_valid <= 1;
+    //     end
+    // end
 
     always@(posedge(clk)) begin
         if(reset) begin
             PC <= 0;
             next_PC <= 0;
             pipeline_valid <= 0;
-            mem_rd_enable <= 0;
+            wait_rg <= 1;
             exception_valid <= 0;
             `ifdef SIMULATE
                 $display("%0d\tFETCH: Reset", $time);
@@ -64,15 +67,18 @@ module fetch(
             next_PC <= flush_addr;
             pipeline_valid <= 0;
             exception_valid <= 0;
-            mem_rd_enable <= 0;
+            wait_rg <= 1;
             `ifdef SIMULATE
                 $display("%0d\tFETCH: Flush - Addr: %h", $time, flush_addr);
             `endif
         end
-        else if(mem_rd_enable && mem_rd_ready) begin
+        else if(wait_rg == 'd1) begin
+            wait_rg <= 'd2;
+            // next_PC <= next_PC + 'd4;
+        end
+        else begin
             // instr <= mem_rd_data;
             pipeline_valid <= 1;
-            mem_rd_enable <= 0;
             if(stall) begin
                 PC <= PC;
                 next_PC <= next_PC;
@@ -88,16 +94,21 @@ module fetch(
                 else begin
                     exception_valid <= 0;
                 end
-                PC <= next_PC;
-                next_PC <= next_PC + 'd4;
+                // if(wait_rg == 'd2)
+                //     wait_rg <= 0;
+                // else begin
+                    PC <= next_PC;
+                    next_PC <= next_PC + 'd4;
+                // end
+                // instr <= mem_rd_data;
             end
             `ifdef SIMULATE
                 $strobe("%0d\t**************FETCH Firing**************", $time);
                 $strobe("%0d\tFETCH: PC: %h nextPC: %h instr: %h", $time, PC, next_PC, instr);
             `endif
         end
-        else begin
-            pipeline_valid <= 0;
-        end
+        // else begin
+        //     pipeline_valid <= 0;
+        // end
     end
 endmodule

@@ -8,6 +8,7 @@
     `include "./src/execute.v"
     `include "./src/memory.v"
     `include "./src/writeback.v"
+    `include "./src/hazard_detect.v"
 `endif
 
 module minuteCore(
@@ -15,9 +16,9 @@ module minuteCore(
     input reset,
     //IMem interface
     output wire [ `ADDR_SIZE : 0] imem_rd_addr,
-    output wire imem_rd_enable,
+    // output wire imem_rd_enable,
     input wire [`INSTR_SIZE : 0] imem_rd_data,
-    input wire imem_rd_ready,
+    // input wire imem_rd_ready,
     //DMem interface
     output wire [`ADDR_SIZE : 0] dmem_addr,
     output wire dmem_r_enable,
@@ -43,9 +44,9 @@ module minuteCore(
         .clk                    (clk),
         .reset                  (reset),
         .mem_rd_addr            (imem_rd_addr),
-        .mem_rd_enable          (imem_rd_enable),
+        // .mem_rd_enable          (imem_rd_enable),
         .mem_rd_data            (imem_rd_data),
-        .mem_rd_ready           (imem_rd_ready),
+        // .mem_rd_ready           (imem_rd_ready),
         .instr                  (instr_IF_ID),
         .PC                     (PC_IF_ID),
         .exception              (exception_IF_ID),
@@ -223,10 +224,6 @@ module minuteCore(
         .stall_out          (stall_MEM_out)
     );
 
-    assign stall_IF = stall_MEM_out;
-    assign stall_ID = stall_MEM_out;
-    assign stall_EXE = stall_MEM_out;
-
     writeback writeback(
         .clk                (clk),
         .reset              (reset),
@@ -247,5 +244,20 @@ module minuteCore(
         .wr_data            (wr_data_WB_RF),
         .wr_enable          (wr_enable_WB_RF)
     );
+
+    wire stall_hazard;
+
+    hazard_detect hazard_detect(
+        .rs1            (rs1_addr_ID_RF),
+        .rs2            (rs2_addr_ID_RF),
+        .rd_EXE         (rd_addr_EXE_MEM),
+        .rd_MEM         (rd_addr_MEM_WB),
+        .rd_WB          (wr_addr_WB_RF),
+        .stall          (stall_hazard)
+    );
+
+    assign stall_IF = stall_MEM_out | stall_hazard;
+    assign stall_ID = stall_MEM_out | stall_hazard;
+    assign stall_EXE = stall_MEM_out;
 
 endmodule // minuteCore
