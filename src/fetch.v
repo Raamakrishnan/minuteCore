@@ -10,7 +10,7 @@ module fetch(
 
     //Interface with memory
     output wire [ `ADDR_SIZE : 0] mem_rd_addr,
-    // output reg mem_rd_enable,
+    output wire mem_rd_enable,
     input wire [`INSTR_SIZE : 0] mem_rd_data,
     // input wire mem_rd_ready,
 
@@ -33,7 +33,7 @@ module fetch(
 
     assign mem_rd_addr = next_PC;
     assign instr = mem_rd_data;
-
+    assign mem_rd_enable = ~stall;
     // assign mem_rd_addr = next_PC;
     // always@(mem_rd_enable or mem_rd_ready or reset or next_PC or stall) begin
     //     if(reset) begin

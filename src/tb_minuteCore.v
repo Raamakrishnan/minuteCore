@@ -31,7 +31,7 @@ module tb_minuteCore();
         .clk            (clk),
         .reset          (reset),
         .imem_rd_addr   (imem_rd_addr),
-        // .imem_rd_enable (imem_rd_enable),
+        .imem_rd_enable (imem_rd_enable),
         .imem_rd_data   (imem_rd_data),
         // .imem_rd_ready  (imem_rd_ready),
         .dmem_addr      (dmem_addr),
@@ -48,7 +48,7 @@ module tb_minuteCore();
         .clk            (clk),
         .reset          (reset),
         .addr           (imem_rd_addr),
-        // .enable         (imem_rd_enable),
+        .enable         (imem_rd_enable),
         .data           (imem_rd_data)
         // .ready          (imem_rd_ready)
     );
@@ -63,7 +63,7 @@ module tb_minuteCore();
         .r_data         (dmem_r_data),
         .w_data         (dmem_w_data),
         .ready          (dmem_ready),
-        .finish         (finish)
+        .finish         (halt)
     );
 
     initial begin
@@ -74,6 +74,8 @@ module tb_minuteCore();
     initial begin
         clk = 1; reset = 1;
         #10 reset = 0;
+        #200 $display("Overflow");
+        $finish();
     end
 
     always@(posedge(halt))

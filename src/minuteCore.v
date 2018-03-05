@@ -16,7 +16,7 @@ module minuteCore(
     input reset,
     //IMem interface
     output wire [ `ADDR_SIZE : 0] imem_rd_addr,
-    // output wire imem_rd_enable,
+    output wire imem_rd_enable,
     input wire [`INSTR_SIZE : 0] imem_rd_data,
     // input wire imem_rd_ready,
     //DMem interface
@@ -44,7 +44,7 @@ module minuteCore(
         .clk                    (clk),
         .reset                  (reset),
         .mem_rd_addr            (imem_rd_addr),
-        // .mem_rd_enable          (imem_rd_enable),
+        .mem_rd_enable          (imem_rd_enable),
         .mem_rd_data            (imem_rd_data),
         // .mem_rd_ready           (imem_rd_ready),
         .instr                  (instr_IF_ID),
@@ -250,8 +250,12 @@ module minuteCore(
     hazard_detect hazard_detect(
         .rs1            (rs1_addr_ID_RF),
         .rs2            (rs2_addr_ID_RF),
+        .rd_ID          (rd_addr_ID_EXE),
+        .rd_ID_valid    (pipeline_valid_ID_EXE),
         .rd_EXE         (rd_addr_EXE_MEM),
+        .rd_EXE_valid   (pipeline_valid_EXE_MEM),
         .rd_MEM         (rd_addr_MEM_WB),
+        .rd_MEM_valid   (pipeline_valid_MEM_WB),
         .rd_WB          (wr_addr_WB_RF),
         .stall          (stall_hazard)
     );

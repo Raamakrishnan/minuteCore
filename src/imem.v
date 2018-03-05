@@ -18,13 +18,14 @@ module imem(
     reg [`ADDR_SIZE : 2] addr_reg;  
 
     initial begin
-        $readmemh("./bin/imem.hex", mem);
+        $readmemh("./bin/imem.txt", mem);
     end
 
     assign data = mem[addr_reg];
 
     always@(posedge(clk)) begin
-        addr_reg <= addr[`ADDR_SIZE : 2];
+        if(enable)
+            addr_reg <= addr[`ADDR_SIZE : 2];
 `ifdef SIMULATE
         $strobe("%0d\tIMEM: Addr: %h Data: %h", $time, addr, data);
 `endif

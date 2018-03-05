@@ -6,9 +6,7 @@ _start:
     nop
     nop
     nop
-    nop
     add x3, x1, x2
-    nop
     nop
     nop
     nop
