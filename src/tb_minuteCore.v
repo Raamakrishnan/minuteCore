@@ -74,7 +74,7 @@ module tb_minuteCore();
     initial begin
         clk = 1; reset = 1;
         #10 reset = 0;
-        #200 $display("Overflow");
+        #1000 $display("Overflow");
         $finish();
     end
 

@@ -173,6 +173,10 @@ module minuteCore(
         .stall              (stall_EXE)
     );
 
+    assign flush_IF = flush_out_EXE;
+    assign flush_ID = flush_out_EXE;
+    assign flush_addr_IF = flush_addr_out_EXE;
+
     wire stall_MEM_out;
     wire [`ADDR_SIZE : 0] PC_MEM_WB;
     wire [`INSTR_SIZE : 0] instr_MEM_WB;

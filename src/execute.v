@@ -54,10 +54,10 @@ module execute(
     reg halt_rg;
 
     always @(*) begin
+        flush_out = 0;        
         if(pipeline_in_valid) begin
             exception_out_rg = exception_in;
             exception_out_valid_rg = exception_in_valid;
-            flush_out_rg = 0;
             halt_rg = 0;
             if(exception_in_valid == 0 && nop_instr_in == 0) begin
                 if(opcode_in == `OP_IMM_ARITH || opcode_in == `OP_ARITH) begin
@@ -100,25 +100,25 @@ module execute(
                 end
                 else if(opcode_in == `OP_JAL) begin
                     result_rg = PC_in + 'd4;
-                    flush_out_rg = 1;
-                    flush_addr_rg = PC_in + op2;
+                    flush_out = 1;
+                    flush_addr = PC_in + op2;
                     halt_rg = (op2 == 0)? 1:0;
                 end
                 else if(opcode_in == `OP_JALR) begin
                     result_rg = PC_in + 'd4;
-                    flush_out_rg = 1;
-                    flush_addr_rg = (op1 + op2) & 1'b0;
+                    flush_out = 1;
+                    flush_addr = (op1 + op2) & 1'b0;
                 end
                 else if(opcode_in == `OP_BRANCH) begin
-                    flush_addr_rg = PC_in + offset;
+                    flush_addr = PC_in + offset;
                     case (funct_in)
-                        `F3_BEQ:  flush_out_rg = (op1 == op2);
-                        `F3_BNE:  flush_out_rg = (op1 != op2);
-                        `F3_BLT:  flush_out_rg = (op1 < op2);
-                        `F3_BLTU: flush_out_rg = ($signed(op1) < $signed(op2));
-                        `F3_BGE:  flush_out_rg = (op1 >= op2);
-                        `F3_BGEU: flush_out_rg = ($signed(op1) >= $signed(op2));
-                        default:  flush_out_rg = 0;
+                        `F3_BEQ:  flush_out = (op1 == op2);
+                        `F3_BNE:  flush_out = (op1 != op2);
+                        `F3_BLT:  flush_out = (op1 < op2);
+                        `F3_BLTU: flush_out = ($signed(op1) < $signed(op2));
+                        `F3_BGE:  flush_out = (op1 >= op2);
+                        `F3_BGEU: flush_out = ($signed(op1) >= $signed(op2));
+                        default:  flush_out = 0;
                     endcase
                 end
                 else if(opcode_in == `OP_LOAD) begin
@@ -172,8 +172,8 @@ module execute(
             result <= result_rg;
             nop_instr_out <= nop_instr_in;
             addr <= addr_rg;
-            flush_out <= flush_out_rg;
-            flush_addr <= flush_addr_rg;
+            // flush_out <= flush_out_rg;
+            // flush_addr <= flush_addr_rg;
             halt <= halt_rg;
         end
     endtask
@@ -201,6 +201,7 @@ module execute(
         endcase
         $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h rd: r%d", $time, PC_out, instr_out, result, rd_addr_out);
         $strobe("%0d\tEXECUTE: Exception: %d(valid %b) Halt: %b", $time, exception_out, exception_out_valid, halt);
+        $strobe("%0d\tEXECUTE: Flush: %h(valid %b)", $time, flush_addr, flush_out);
     end
     endtask
 `endif
