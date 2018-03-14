@@ -13,7 +13,7 @@ module imem(
     output reg ready
 );
 
-    reg [`INSTR_SIZE : 0] mem [0 : 16];
+    reg [`INSTR_SIZE : 0] mem [0 : 63];
 
     reg [`ADDR_SIZE : 2] addr_reg;  
 
