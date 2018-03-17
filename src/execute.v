@@ -61,11 +61,14 @@ module execute(
             halt_rg = 0;
             if(exception_in_valid == 0 && nop_instr_in == 0) begin
                 if(opcode_in == `OP_IMM_ARITH || opcode_in == `OP_ARITH) begin
-                    if(funct_in == `F3_ADD_SUB) begin
+                    if(funct_in == `F3_ADD_SUB && opcode_in == `OP_ARITH) begin
                         if(variant == 0)        //ADD
-                            result_rg = op1 + op2;
+                            result_rg = $signed(op1) + $signed(op2);
                         else                    //SUB
-                            result_rg = op1 - op2;
+                            result_rg = $signed(op1) - $signed(op2);
+                    end
+                    else if(opcode_in == `OP_IMM_ARITH) begin
+                        result_rg = $signed(op1) + $signed(op2);
                     end
                     else if(funct_in == `F3_SLT_SLTI) begin
                         result_rg = (op1 < op2);
@@ -114,10 +117,10 @@ module execute(
                     case (funct_in)
                         `F3_BEQ:  flush_out = (op1 == op2);
                         `F3_BNE:  flush_out = (op1 != op2);
-                        `F3_BLT:  flush_out = (op1 < op2);
-                        `F3_BLTU: flush_out = ($signed(op1) < $signed(op2));
-                        `F3_BGE:  flush_out = (op1 >= op2);
-                        `F3_BGEU: flush_out = ($signed(op1) >= $signed(op2));
+                        `F3_BLTU:  flush_out = (op1 < op2);
+                        `F3_BLT: flush_out = ($signed(op1) < $signed(op2));
+                        `F3_BGEU:  flush_out = (op1 >= op2);
+                        `F3_BGE: flush_out = ($signed(op1) >= $signed(op2));
                         default:  flush_out = 0;
                     endcase
                 end

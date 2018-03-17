@@ -71,7 +71,7 @@ module minuteCore(
     wire [`REG_ADDR_SIZE : 0] rd_addr_ID_EXE;
     wire [`REG_ADDR_SIZE : 0] rs1_addr_ID_RF, rs2_addr_ID_RF;
     wire [`REG_DATA_SIZE : 0] rs1_data_ID_RF, rs2_data_ID_RF;
-    wire stall_ID, flush_ID;
+    wire stall_ID, flush_ID, insert_nop_ID;
 
     decode decode(
         .clk                (clk),
@@ -101,6 +101,7 @@ module minuteCore(
         .rs2_addr           (rs2_addr_ID_RF),
         .rs2_data           (rs2_data_ID_RF),
         .stall              (stall_ID),
+        .insert_nop         (insert_nop_ID),
         .flush              (flush_ID)
     );
 
@@ -265,7 +266,8 @@ module minuteCore(
     );
 
     assign stall_IF = stall_MEM_out | stall_hazard;
-    assign stall_ID = stall_MEM_out | stall_hazard;
+    assign stall_ID = stall_MEM_out;
+    assign insert_nop_ID = stall_hazard;
     assign stall_EXE = stall_MEM_out;
 
 endmodule // minuteCore

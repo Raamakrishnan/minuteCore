@@ -41,6 +41,7 @@ module decode(
     input wire [`REG_DATA_SIZE : 0] rs2_data,
 
     input wire stall,
+    input wire insert_nop,
     input wire flush
 );
 
@@ -98,7 +99,7 @@ module decode(
                     else begin
                         nop_instr_rg = 1;
                         // `DISPLAY("NOP")
-                end
+                    end
                 end
                 else if(op == `OP_LUI || op == `OP_AUIPC) begin
                     rd_addr_rg = rd;
@@ -179,10 +180,18 @@ module decode(
             `endif
         end
         else if(stall) begin
-            stallPipeline;
+            PC_out <= PC_out;
+            pipeline_out_valid <= pipeline_out_valid;
+            `ifdef SIMULATE
+                instr_out <= instr_out;
+                $display("%0d\tDECODE: Stall", $time);
+            `endif
+        end
+        else if(insert_nop) begin
+            insertNop;
             `ifdef SIMULATE
                 instr_out <= 32'h00000013;
-                $display("%0d\tDECODE: Stall", $time);
+                $display("%0d\tDECODE: Insert NOP", $time);
             `endif
         end
         else if(pipeline_in_valid) begin
@@ -197,7 +206,7 @@ module decode(
         end
     end
 
-    task stallPipeline;
+    task insertNop;
     begin
         PC_out <= PC_out;
         pipeline_out_valid <= 1;

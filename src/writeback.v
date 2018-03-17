@@ -61,10 +61,18 @@ module writeback(
         else if(pipeline_valid) begin
 `ifdef SIMULATE
             printDebug;
+            $fwrite(file, "%0d %h (%h) x%d %h\n", $time, PC, instr, rd_addr, result);
 `endif
             halt_out <= halt_in? 1 : halt_out;
         end
     end
+
+`ifdef SIMULATE
+    integer file;
+    initial begin
+        file = $fopen("./bin/rtl.dump", "w");
+    end
+`endif
 
 `ifdef SIMULATE
     task printDebug;
