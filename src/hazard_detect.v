@@ -24,7 +24,7 @@ module hazard_detect(
     always@(*) begin
         stall = 0;
         if(rs1_stall || rs2_stall)
-            stall = 0;
+            stall = 1;
     end
 
 endmodule // hazard_detect

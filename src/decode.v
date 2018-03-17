@@ -179,10 +179,9 @@ module decode(
             `endif
         end
         else if(stall) begin
-            PC_out <= PC_out;
-            pipeline_out_valid <= pipeline_out_valid;
+            stallPipeline;
             `ifdef SIMULATE
-                instr_out <= instr_out;
+                instr_out <= 32'h00000013;
                 $display("%0d\tDECODE: Stall", $time);
             `endif
         end
@@ -197,6 +196,22 @@ module decode(
             `endif
         end
     end
+
+    task stallPipeline;
+    begin
+        PC_out <= PC_out;
+        pipeline_out_valid <= 1;
+        exception_out_valid <= 0;
+        opcode <= `OP_IMM_ARITH;
+        funct <= 0;
+        variant <= 0;
+        op1 <= 0;
+        op2 <= 0;
+        rd_addr <= 0;
+        offset <= 0;
+        nop_instr <= 1;
+    end
+    endtask
 
     task advancePipeline;
     begin
