@@ -202,7 +202,7 @@ module execute(
             `OP_STORE: `DISPLAY("OP: Store")
             default: `DISPLAY("OP: Unknown")
         endcase
-        $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h rd: r%d", $time, PC_out, instr_out, result, rd_addr_out);
+        $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h addr: %h rd: r%d", $time, PC_out, instr_out, result, addr, rd_addr_out);
         $strobe("%0d\tEXECUTE: Exception: %d(valid %b) Halt: %b", $time, exception_out, exception_out_valid, halt);
         $strobe("%0d\tEXECUTE: Flush: %h(valid %b)", $time, flush_addr, flush_out);
     end

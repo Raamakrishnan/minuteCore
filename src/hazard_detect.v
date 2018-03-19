@@ -18,8 +18,8 @@ module hazard_detect(
     output reg stall
 );
 
-    wire rs1_stall = (rs1 != 0 && ((rd_EXE_valid && rd_EXE == rs1) || (rd_MEM_valid && rd_MEM == rs1)))? 1 : 0;
-    wire rs2_stall = (rs2 != 0 && ((rd_EXE_valid && rd_EXE == rs2) || (rd_MEM_valid && rd_MEM == rs2)))? 1 : 0;
+    wire rs1_stall = (rs1 != 0 && ((rd_ID_valid && rd_ID == rs1) || (rd_EXE_valid && rd_EXE == rs1) || (rd_MEM_valid && rd_MEM == rs1)))? 1 : 0;
+    wire rs2_stall = (rs2 != 0 && ((rd_ID_valid && rd_ID == rs2) || (rd_EXE_valid && rd_EXE == rs2) || (rd_MEM_valid && rd_MEM == rs2)))? 1 : 0;
     
     always@(*) begin
         stall = 0;

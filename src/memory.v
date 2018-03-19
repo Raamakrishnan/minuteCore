@@ -122,6 +122,7 @@ module memory(
                 mem_wr_data <= result_in;
                 mem_wr_enable <= 1;
                 mem_wr_size <= funct_in[1:0];
+                result_out <= result_in;
                 advancePipeline;
             end
             else begin

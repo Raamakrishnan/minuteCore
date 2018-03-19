@@ -44,7 +44,7 @@ module dmem(
 //         `endif
 //     end
 
-    wire [`ADDR_SIZE : 2] r_addr0, r_addr1, r_addr2, r_addr3;
+    wire [`ADDR_SIZE - 2 : 0] r_addr0, r_addr1, r_addr2, r_addr3;
     wire [7:0] w_data0, w_data1, w_data2, w_data3;
     wire w_enable0, w_enable1, w_enable2, w_enable3;
     wire [7:0] r_data0, r_data1, r_data2, r_data3;
@@ -55,7 +55,7 @@ module dmem(
 
 sp_ram #(.INIT_FILE("./bin/dmem.0.txt"), .OUT_FILE("./bin/dmem.0.out.txt")) mem0(
     .clk(clk),
-    .addr(r_addr0),
+    .addr(r_addr0[5:0]),
     .data(w_data0),
     .we(w_enable0),
     .q(r_data0)
@@ -66,7 +66,7 @@ sp_ram #(.INIT_FILE("./bin/dmem.0.txt"), .OUT_FILE("./bin/dmem.0.out.txt")) mem0
 
 sp_ram #(.INIT_FILE("./bin/dmem.1.txt"), .OUT_FILE("./bin/dmem.1.out.txt")) mem1(
     .clk(clk),
-    .addr(r_addr1),
+    .addr(r_addr1[5:0]),
     .data(w_data1),
     .we(w_enable1),
     .q(r_data1)
@@ -77,7 +77,7 @@ sp_ram #(.INIT_FILE("./bin/dmem.1.txt"), .OUT_FILE("./bin/dmem.1.out.txt")) mem1
 
 sp_ram #(.INIT_FILE("./bin/dmem.2.txt"), .OUT_FILE("./bin/dmem.2.out.txt")) mem2(
     .clk(clk),
-    .addr(r_addr2),
+    .addr(r_addr2[5:0]),
     .data(w_data2),
     .we(w_enable2),
     .q(r_data2)
@@ -88,7 +88,7 @@ sp_ram #(.INIT_FILE("./bin/dmem.2.txt"), .OUT_FILE("./bin/dmem.2.out.txt")) mem2
 
 sp_ram #(.INIT_FILE("./bin/dmem.3.txt"), .OUT_FILE("./bin/dmem.3.out.txt")) mem3(
     .clk(clk),
-    .addr(r_addr3),
+    .addr(r_addr3[5:0]),
     .data(w_data3),
     .we(w_enable3),
     .q(r_data3)
@@ -122,7 +122,7 @@ sp_ram #(.INIT_FILE("./bin/dmem.3.txt"), .OUT_FILE("./bin/dmem.3.out.txt")) mem3
     assign w_enable2 = w_enable_mux(sel, wb2, wb1, wb0, wb3);
     assign w_enable3 = w_enable_mux(sel, wb3, wb2, wb1, wb0);
 
-    function [`ADDR_SIZE : 2] addr_mux(
+    function [`ADDR_SIZE - 2 : 0] addr_mux(
         input [1:0] select, 
         input [`ADDR_SIZE : 2] in0, 
         input [`ADDR_SIZE : 2] in1,

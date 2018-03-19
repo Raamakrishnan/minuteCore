@@ -43,11 +43,11 @@ module regfile(
     end
 
     always@(negedge(clk)) begin
-`ifdef SIMULATE
-        $strobe("%0d\tREGFILE: READ: rs1: %h rs2: %h", $time, rd_addr_1, rd_addr_2);
-`endif
         rd_data_1 <= (rd_addr_1 == 0)? 0 : mem[rd_addr_1];
         rd_data_2 <= (rd_addr_2 == 0)? 0 : mem[rd_addr_2];
+`ifdef SIMULATE
+        $strobe("%0d\tREGFILE: READ: rs1: r%d - %h rs2: r%d - %h", $time, rd_addr_1, rd_data_1, rd_addr_2, rd_data_2);
+`endif
     end
 
 endmodule // regfile
