@@ -70,7 +70,7 @@ module writeback(
 `ifdef SIMULATE
     integer file;
     initial begin
-        file = $fopen("./bin/rtl.dump", "w");
+        file = $fopen("rtl.dump", "w");
     end
 `endif
 

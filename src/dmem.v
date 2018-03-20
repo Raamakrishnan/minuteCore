@@ -53,7 +53,7 @@ module dmem(
     wire [1:0] sel = addr[1:0];
     wire wb0, wb1, wb2, wb3;
 
-sp_ram #(.INIT_FILE("./bin/dmem.0.txt"), .OUT_FILE("./bin/dmem.0.out.txt")) mem0(
+sp_ram #(.INIT_FILE("dmem.0.txt"), .OUT_FILE("dmem.0.out.txt")) mem0(
     .clk(clk),
     .addr(r_addr0[5:0]),
     .data(w_data0),
@@ -64,7 +64,7 @@ sp_ram #(.INIT_FILE("./bin/dmem.0.txt"), .OUT_FILE("./bin/dmem.0.out.txt")) mem0
 `endif
 );
 
-sp_ram #(.INIT_FILE("./bin/dmem.1.txt"), .OUT_FILE("./bin/dmem.1.out.txt")) mem1(
+sp_ram #(.INIT_FILE("dmem.1.txt"), .OUT_FILE("dmem.1.out.txt")) mem1(
     .clk(clk),
     .addr(r_addr1[5:0]),
     .data(w_data1),
@@ -75,7 +75,7 @@ sp_ram #(.INIT_FILE("./bin/dmem.1.txt"), .OUT_FILE("./bin/dmem.1.out.txt")) mem1
 `endif
 );
 
-sp_ram #(.INIT_FILE("./bin/dmem.2.txt"), .OUT_FILE("./bin/dmem.2.out.txt")) mem2(
+sp_ram #(.INIT_FILE("dmem.2.txt"), .OUT_FILE("dmem.2.out.txt")) mem2(
     .clk(clk),
     .addr(r_addr2[5:0]),
     .data(w_data2),
@@ -86,7 +86,7 @@ sp_ram #(.INIT_FILE("./bin/dmem.2.txt"), .OUT_FILE("./bin/dmem.2.out.txt")) mem2
 `endif
 );
 
-sp_ram #(.INIT_FILE("./bin/dmem.3.txt"), .OUT_FILE("./bin/dmem.3.out.txt")) mem3(
+sp_ram #(.INIT_FILE("dmem.3.txt"), .OUT_FILE("dmem.3.out.txt")) mem3(
     .clk(clk),
     .addr(r_addr3[5:0]),
     .data(w_data3),

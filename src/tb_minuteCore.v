@@ -9,7 +9,7 @@
 `endif
 
 `ifndef OUT_DIR
-    `define OUT_DIR "./bin"
+    `define OUT_DIR ./bin
 `endif
 
 module tb_minuteCore();
@@ -71,7 +71,7 @@ module tb_minuteCore();
     );
 
     initial begin
-        $dumpfile("`OUT_DIR/wave.vcd");
+        $dumpfile("wave.vcd");
         $dumpvars(0, tb_minuteCore);
     end
 

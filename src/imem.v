@@ -18,7 +18,7 @@ module imem(
     reg [`ADDR_SIZE : 2] addr_reg;  
 
     initial begin
-        $readmemh("./bin/imem.txt", mem);
+        $readmemh("imem.txt", mem);
     end
 
     assign data = mem[addr_reg];

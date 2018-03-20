@@ -1,6 +1,11 @@
+# Output files
 *.dump
 *.log
-bin/
-build/
+*.vcd
 *.o
 *~
+
+# Output folders
+bin/
+build/
+sim/
