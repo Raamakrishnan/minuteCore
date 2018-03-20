@@ -8,6 +8,10 @@
     `include "./src/dmem.v"
 `endif
 
+`ifndef OUT_DIR
+    `define OUT_DIR "./bin"
+`endif
+
 module tb_minuteCore();
     reg clk, reset;
 
@@ -67,7 +71,7 @@ module tb_minuteCore();
     );
 
     initial begin
-        $dumpfile("./bin/wave.vcd");
+        $dumpfile("`OUT_DIR/wave.vcd");
         $dumpvars(0, tb_minuteCore);
     end
 
