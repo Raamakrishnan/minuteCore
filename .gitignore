@@ -4,8 +4,12 @@
 *.vcd
 *.o
 *~
+log
+transcript
 
 # Output folders
 bin/
 build/
 sim/
+sim/iverilog
+sim/modelsim

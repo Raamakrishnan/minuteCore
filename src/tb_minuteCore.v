@@ -7,10 +7,16 @@
     `include "./src/imem.v"
     `include "./src/dmem.v"
 `endif
-
-`ifndef OUT_DIR
-    `define OUT_DIR ./bin
+`ifdef MODEL_TECH
+    `define SIMULATE
+    `ifndef INCLUDE_PARAMS
+        `include "def_params.v"
+    `endif
+    `include "minuteCore.v"
+    `include "imem.v"
+    `include "dmem.v"
 `endif
+
 
 module tb_minuteCore();
     reg clk, reset;

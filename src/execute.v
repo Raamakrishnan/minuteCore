@@ -3,6 +3,11 @@
         `include "./src/def_params.v"
     `endif
 `endif
+`ifdef MODEL_TECH
+    `ifndef INCLUDE_PARAMS
+        `include "def_params.v"
+    `endif
+`endif
 `define DISPLAY(A) `ifdef SIMULATE $display("%0d\tEXECUTE: ",$time,A); `endif
 module execute(
     input clk,

@@ -31,9 +31,9 @@
 `define F3_LW           3'b010
 `define F3_LBU          3'b100
 `define F3_LHW          3'b101
-`define F#_SB           3'b000
+`define F3_SB           3'b000
 `define F3_SH           3'b001
-`define F#_SW           3'b010
+`define F3_SW           3'b010
 `define F3_ADD_SUB      3'b000
 `define F3_SLT_SLTI     3'b010
 `define F3_SLTU_SLTIU   3'b011

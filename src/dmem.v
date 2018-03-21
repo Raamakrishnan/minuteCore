@@ -1,10 +1,15 @@
 `ifdef __ICARUS__
     `ifndef INCLUDE_PARAMS
         `include "./src/def_params.v"
-        `include "./src/sp_ram.v"
     `endif
+    `include "./src/sp_ram.v"
 `endif
-
+`ifdef MODEL_TECH
+    `ifndef INCLUDE_PARAMS
+        `include "def_params.v"
+    `endif
+    `include "sp_ram.v"
+`endif
 module dmem(
     input wire clk,
     input wire reset,

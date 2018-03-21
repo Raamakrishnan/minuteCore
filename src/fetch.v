@@ -3,7 +3,11 @@
         `include "./src/def_params.v"
     `endif
 `endif
-
+`ifdef MODEL_TECH
+    `ifndef INCLUDE_PARAMS
+        `include "def_params.v"
+    `endif
+`endif
 module fetch(
     input wire clk,
     input wire reset,

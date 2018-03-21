@@ -3,6 +3,12 @@
         `include "./src/def_params.v"
     `endif
 `endif
+`ifdef MODEL_TECH
+    `ifndef INCLUDE_PARAMS
+        `include "def_params.v"
+    `endif
+`endif
+
 
 // Quartus II Verilog Template
 // Single port RAM with single read/write address 

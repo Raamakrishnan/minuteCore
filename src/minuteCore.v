@@ -10,6 +10,18 @@
     `include "./src/writeback.v"
     `include "./src/hazard_detect.v"
 `endif
+`ifdef MODEL_TECH
+    `ifndef INCLUDE_PARAMS
+        `include "def_params.v"
+    `endif
+    `include "fetch.v"
+    `include "decode.v"
+    `include "regfile.v"
+    `include "execute.v"
+    `include "memory.v"
+    `include "writeback.v"
+    `include "hazard_detect.v"
+`endif
 
 module minuteCore(
     input clk,
