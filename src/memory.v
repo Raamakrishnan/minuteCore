@@ -36,6 +36,7 @@ module memory(
     output reg [`INSTR_SIZE : 0] instr_out,
     `endif
     output reg [4:0] opcode_out,
+    output reg [2:0] funct_out,
     output reg nop_instr_out,
     output reg [`REG_DATA_SIZE : 0] result_out,
     output reg [`REG_ADDR_SIZE : 0] rd_addr_out,
@@ -145,6 +146,7 @@ module memory(
         printDebug; 
         `endif
         opcode_out <= opcode_in;
+        funct_out <= funct_in;
         pipeline_out_valid <= pipeline_in_valid;
         rd_addr_out <= rd_addr_in;
         nop_instr_out <= nop_instr_in;

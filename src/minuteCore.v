@@ -194,6 +194,7 @@ module minuteCore(
     wire [`ADDR_SIZE : 0] PC_MEM_WB;
     wire [`INSTR_SIZE : 0] instr_MEM_WB;
     wire [4:0] opcode_MEM_WB;
+    wire [2:0] funct_MEM_WB;
     wire nop_instr_MEM_WB;
     wire [`REG_DATA_SIZE : 0] result_MEM_WB;
     wire [`REG_ADDR_SIZE : 0] rd_addr_MEM_WB;
@@ -224,6 +225,7 @@ module minuteCore(
         .instr_out          (instr_MEM_WB),
 `endif
         .opcode_out         (opcode_MEM_WB),
+        .funct_out          (funct_MEM_WB),
         .nop_instr_out      (nop_instr_MEM_WB),
         .result_out         (result_MEM_WB),
         .rd_addr_out        (rd_addr_MEM_WB),
@@ -249,6 +251,7 @@ module minuteCore(
         .instr              (instr_MEM_WB),
 `endif
         .opcode             (opcode_MEM_WB),
+        .funct              (funct_MEM_WB),
         .nop_instr          (nop_instr_MEM_WB),
         .result             (result_MEM_WB),
         .rd_addr            (rd_addr_MEM_WB),

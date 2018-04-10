@@ -20,6 +20,7 @@ module writeback(
     input wire [`INSTR_SIZE : 0] instr,
     `endif
     input wire [4:0] opcode,
+    input wire [2:0] funct,
     input wire nop_instr,
     input wire [`REG_DATA_SIZE : 0] result,
     input wire [`REG_ADDR_SIZE : 0] rd_addr,
@@ -28,6 +29,8 @@ module writeback(
     input wire pipeline_valid,
     input wire halt_in,
 
+    output wire flush,
+    output wire [`ADDR_SIZE : 0] flush_addr,
     output reg halt_out,
 
     //RegFile interface
