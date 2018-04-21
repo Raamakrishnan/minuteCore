@@ -15,10 +15,8 @@ module writeback(
     input wire reset,
 
     //interface pipeline in
-    `ifdef SIMULATE
     input wire [`ADDR_SIZE : 0] PC,
     input wire [`INSTR_SIZE : 0] instr,
-    `endif
     input wire [4:0] opcode,
     input wire [2:0] funct,
     input wire nop_instr,

@@ -16,7 +16,7 @@
 `define OP_IMM_ARITH    5'b00100
 `define	OP_ARITH        5'b01100
 `define OP_FENCE        5'b00011
-`define OP_CSR          5'b11100
+`define OP_SYSTEM          5'b11100
 
 ///////////////////////// funct3 codes ///////////////////
 `define F3_JALR         3'b000

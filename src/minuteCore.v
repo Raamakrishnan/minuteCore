@@ -70,9 +70,7 @@ module minuteCore(
     );
 
     wire [`ADDR_SIZE : 0] PC_ID_EXE;
-    `ifdef SIMULATE
     wire [`INSTR_SIZE : 0] instr_ID_EXE;
-    `endif
     wire [`EX_WIDTH : 0] exception_ID_EXE;
     wire exception_valid_ID_EXE;
     wire pipeline_valid_ID_EXE;
@@ -94,9 +92,7 @@ module minuteCore(
         .exception_in_valid (exception_valid_IF_ID),
         .pipeline_in_valid  (pipeline_valid_IF_ID),
         .PC_out             (PC_ID_EXE),
-`ifdef SIMULATE 
         .instr_out          (instr_ID_EXE),
-`endif
         .exception_out      (exception_ID_EXE),
         .exception_out_valid(exception_valid_ID_EXE),
         .pipeline_out_valid (pipeline_valid_ID_EXE),
@@ -153,9 +149,7 @@ module minuteCore(
         .clk                (clk),
         .reset              (reset),
         .PC_in              (PC_ID_EXE),
-`ifdef SIMULATE 
         .instr_in           (instr_ID_EXE),
-`endif
         .exception_in       (exception_ID_EXE),
         .exception_in_valid (exception_valid_ID_EXE),
         .pipeline_in_valid  (pipeline_valid_ID_EXE),
@@ -167,10 +161,8 @@ module minuteCore(
         .rd_addr_in         (rd_addr_ID_EXE),
         .offset             (offset_ID_EXE),
         .nop_instr_in       (nop_instr_ID_EXE),
-`ifdef SIMULATE
         .PC_out             (PC_EXE_MEM),
         .instr_out          (instr_EXE_MEM),
-`endif
         .opcode_out         (opcode_EXE_MEM),
         .funct_out          (funct_EXE_MEM),
         .nop_instr_out      (nop_instr_EXE_MEM),
@@ -206,10 +198,8 @@ module minuteCore(
     memory memory(
         .clk                (clk),
         .reset              (reset),
-`ifdef SIMULATE
         .PC_in              (PC_EXE_MEM),
         .instr_in           (instr_EXE_MEM),
-`endif
         .opcode_in          (opcode_EXE_MEM),
         .funct_in           (funct_EXE_MEM),
         .nop_instr_in       (nop_instr_EXE_MEM),
@@ -220,10 +210,8 @@ module minuteCore(
         .addr               (addr_EXE_MEM),
         .rd_addr_in         (rd_addr_EXE_MEM),
         .halt_in            (halt_EXE_MEM),
-`ifdef SIMULATE
         .PC_out             (PC_MEM_WB),
         .instr_out          (instr_MEM_WB),
-`endif
         .opcode_out         (opcode_MEM_WB),
         .funct_out          (funct_MEM_WB),
         .nop_instr_out      (nop_instr_MEM_WB),
@@ -246,10 +234,8 @@ module minuteCore(
     writeback writeback(
         .clk                (clk),
         .reset              (reset),
-`ifdef SIMULATE
         .PC                 (PC_MEM_WB),
         .instr              (instr_MEM_WB),
-`endif
         .opcode             (opcode_MEM_WB),
         .funct              (funct_MEM_WB),
         .nop_instr          (nop_instr_MEM_WB),

@@ -15,9 +15,7 @@ module execute(
 
     //Interface pipeline in
     input wire [`ADDR_SIZE : 0] PC_in,
-    `ifdef SIMULATE
     input wire [`INSTR_SIZE : 0] instr_in,
-    `endif
     input wire [`EX_WIDTH : 0] exception_in,
     input wire exception_in_valid,
     input wire pipeline_in_valid,
@@ -30,10 +28,8 @@ module execute(
     input wire [`REG_DATA_SIZE : 0] offset,
     input wire nop_instr_in,
 
-    `ifdef SIMULATE
     output reg [`ADDR_SIZE : 0] PC_out,
     output reg [`INSTR_SIZE : 0] instr_out,
-    `endif
     output reg [4:0] opcode_out,
     output reg [2:0] funct_out,
     output reg nop_instr_out,
@@ -153,17 +149,15 @@ module execute(
         end
         else if(stall) begin
             pipeline_out_valid <= pipeline_out_valid;
+            PC_out <= PC_out;
+            instr_out <= instr_out;
             `ifdef SIMULATE
-                PC_out <= PC_out;
-                instr_out <= instr_out;
                 $display("%0d\tEXECUTE: Stall", $time);
             `endif
         end
         else if(pipeline_in_valid) begin
             advancePipeline;
             `ifdef SIMULATE
-                PC_out <= PC_in;
-                instr_out <= instr_in;
                 printDebug;
             `endif
         end
@@ -171,6 +165,8 @@ module execute(
 
     task advancePipeline;
         begin
+            PC_out <= PC_in;
+            instr_out <= instr_in;
             pipeline_out_valid <= pipeline_in_valid;
             opcode_out <= opcode_in;
             rd_addr_out <= rd_addr_in;

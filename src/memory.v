@@ -15,10 +15,8 @@ module memory(
     input wire reset,
 
     //interface pipeline in
-    `ifdef SIMULATE
     input wire [`ADDR_SIZE : 0] PC_in,
     input wire [`INSTR_SIZE : 0] instr_in,
-    `endif
     input wire [4:0] opcode_in,
     input wire [2:0] funct_in,
     input wire nop_instr_in,
@@ -31,10 +29,8 @@ module memory(
     input wire halt_in,
 
     //Interface pipeline out
-    `ifdef SIMULATE
     output reg [`ADDR_SIZE : 0] PC_out,
     output reg [`INSTR_SIZE : 0] instr_out,
-    `endif
     output reg [4:0] opcode_out,
     output reg [2:0] funct_out,
     output reg nop_instr_out,
@@ -105,7 +101,9 @@ module memory(
         end
         else if(stall_in) begin
             pipeline_out_valid <= pipeline_out_valid;
+`ifdef SIMULATE
             `DISPLAY("Stall")
+`endif
         end
         else if(pipeline_in_valid) begin
             mem_wr_enable <= 0;
@@ -115,13 +113,13 @@ module memory(
                     rg_wait <= 0;
                     advancePipeline;
                 end
-`ifdef SIMULATE
                 else begin
+`ifdef SIMULATE
                     `DISPLAY("OP: Load")
                     `DISPLAY("Stalling for DMEM")
+`endif
                     rg_wait <= 1;
                 end
-`endif
             end
             else if(opcode_in == `OP_STORE) begin
                 mem_addr <= addr;
@@ -140,9 +138,9 @@ module memory(
 
     task advancePipeline;
     begin
-        `ifdef SIMULATE 
         PC_out <= PC_in;
         instr_out <= instr_in;
+        `ifdef SIMULATE 
         printDebug; 
         `endif
         opcode_out <= opcode_in;

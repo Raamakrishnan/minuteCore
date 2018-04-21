@@ -8,7 +8,7 @@ IVERILOG_IMEM = $(IVERILOG_SIM_PATH)/imem.txt
 IVERILOG_DMEM = $(IVERILOG_SIM_PATH)/dmem.0.txt $(IVERILOG_SIM_PATH)/dmem.1.txt \
 				$(IVERILOG_SIM_PATH)/dmem.2.txt $(IVERILOG_SIM_PATH)/dmem.3.txt
 IVERILOG_FLAGS = -Wall
-TEST ?= sort
+TEST ?= bubble_sort
 
 # Icarus Verilog build rules
 

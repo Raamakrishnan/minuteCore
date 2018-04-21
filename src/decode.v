@@ -22,9 +22,7 @@ module decode(
 
     //Interface pipeline out
     output reg [`ADDR_SIZE : 0] PC_out,
-    `ifdef SIMULATE
     output reg [`INSTR_SIZE : 0] instr_out,
-    `endif
     output reg [`EX_WIDTH : 0] exception_out,
     output reg exception_out_valid,
     output reg pipeline_out_valid,
@@ -187,22 +185,20 @@ module decode(
         else if(stall) begin
             PC_out <= PC_out;
             pipeline_out_valid <= pipeline_out_valid;
+            instr_out <= instr_out;
             `ifdef SIMULATE
-                instr_out <= instr_out;
                 $display("%0d\tDECODE: Stall", $time);
             `endif
         end
         else if(insert_nop) begin
             insertNop;
             `ifdef SIMULATE
-                instr_out <= 32'h00000013;
                 $display("%0d\tDECODE: Insert NOP", $time);
             `endif
         end
         else if(pipeline_in_valid) begin
             advancePipeline;
             `ifdef SIMULATE
-                instr_out <= instr_in;
                 printDebug;
                 // $strobe("%0d\t************DECODE Firing************", $time);
                 // $strobe("%0d\tDECODE: PC: %h instr: %h op1: %h op2: %h offset: %h rd: r%d", $time, PC_out, instr_out, op1, op2, offset, rd_addr);
@@ -214,6 +210,7 @@ module decode(
     task insertNop;
     begin
         PC_out <= PC_out;
+        instr_out <= 32'h00000013;
         pipeline_out_valid <= 1;
         exception_out_valid <= 0;
         opcode <= `OP_IMM_ARITH;
@@ -230,6 +227,7 @@ module decode(
     task advancePipeline;
     begin
         PC_out <= PC_in;
+        instr_out <= instr_in;        
         pipeline_out_valid <= pipeline_in_valid;
         exception_out <= exception_out_rg;
         exception_out_valid <= exception_out_valid_rg;
