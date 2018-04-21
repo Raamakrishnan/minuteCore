@@ -50,12 +50,12 @@ module decode(
 
     reg [`EX_WIDTH : 0] exception_out_rg;
     reg exception_out_valid_rg;
-    reg [4:0] opcode_rg;
-    reg [2:0] funct_rg;
+    // reg [4:0] opcode_rg;
+    // reg [2:0] funct_rg;
     reg variant_rg;
     reg [`REG_DATA_SIZE : 0] op1_rg;
     reg [`REG_DATA_SIZE : 0] op2_rg;
-    reg [`REG_ADDR_SIZE : 0] rd_addr_rg;
+    // reg [`REG_ADDR_SIZE : 0] rd_addr_rg;
     reg [`REG_DATA_SIZE : 0] offset_rg;
     reg nop_instr_rg;
 
@@ -79,7 +79,7 @@ module decode(
     always@(*) begin
         if(pipeline_in_valid) begin
             nop_instr_rg = 0;
-            opcode_rg = op;
+            // opcode_rg = op;
             exception_out_rg = exception_in;
             exception_out_valid_rg = exception_in_valid;
             if(exception_in_valid == 0) begin
@@ -91,12 +91,12 @@ module decode(
                 //Integer Computational Instructions
                 else if(op == `OP_IMM_ARITH) begin
                     if(instr_in[31:12] != 0) begin
-                        rd_addr_rg = rd;
+                        // rd_addr_rg = rd;
                         // rs1_addr = rs1;
                         op1_rg = rs1_data;
                         op2_rg = imm_I;
-                        funct_rg = f3;
-                        variant_rg = f7[5];
+                        // funct_rg = f3;
+                        // variant_rg = f7[5];
                         // `DISPLAY("Immediate Arith")
                     end
                     else begin
@@ -105,28 +105,28 @@ module decode(
                     end
                 end
                 else if(op == `OP_LUI || op == `OP_AUIPC) begin
-                    rd_addr_rg = rd;
+                    // rd_addr_rg = rd;
                     op2_rg = imm_U;
                     // `DISPLAY("LUI or AUIPC")
                 end
                 else if(op == `OP_ARITH) begin
-                    rd_addr_rg = rd;
+                    // rd_addr_rg = rd;
                     // rs1_addr = rs1;
                     // rs2_addr = rs2;
                     op1_rg = rs1_data;
                     op2_rg = rs2_data;
-                    funct_rg = f3;
-                    variant_rg = f7[5];
+                    // funct_rg = f3;
+                    // variant_rg = f7[5];
                     // `DISPLAY("Arith")
                 end
                 // Control transfer instructions
                 else if(op == `OP_JAL) begin
-                    rd_addr_rg = rd;
+                    // rd_addr_rg = rd;
                     op2_rg = imm_J;
                     // `DISPLAY("JAL")
                 end
                 else if(op == `OP_JALR && f3 == 0) begin
-                    rd_addr_rg = rd;
+                    // rd_addr_rg = rd;
                     // rs1_addr = rs1;
                     op1_rg = rs1_data;
                     op2_rg = imm_I;
@@ -138,16 +138,16 @@ module decode(
                     // rs2_addr = rs2;
                     op2_rg = rs2_data;
                     offset_rg = imm_B;
-                    funct_rg = f3;
+                    // funct_rg = f3;
                     // `DISPLAY("Branch")
                 end
                 // Load Store Instructions
                 else if(op == `OP_LOAD) begin
-                    rd_addr_rg = rd;
+                    // rd_addr_rg = rd;
                     // rs1_addr = rs1;
                     op1_rg = rs1_data;
                     op2_rg = imm_I;
-                    funct_rg = f3;
+                    // funct_rg = f3;
                     // `DISPLAY("Load")
                 end
                 else if(op == `OP_STORE) begin
@@ -156,7 +156,7 @@ module decode(
                     // rs2_addr = rs2;
                     op2_rg = rs2_data;
                     offset_rg = imm_S;
-                    funct_rg = f3;
+                    // funct_rg = f3;
                     // `DISPLAY("Store")
                 end
                 else if(op == `OP_FENCE) begin
@@ -231,12 +231,12 @@ module decode(
         pipeline_out_valid <= pipeline_in_valid;
         exception_out <= exception_out_rg;
         exception_out_valid <= exception_out_valid_rg;
-        opcode <= opcode_rg;
-        funct <= funct_rg;
-        variant <= variant_rg;
+        opcode <= op;
+        funct <= f3;
+        variant <= instr_in[30];
         op1 <= op1_rg;
         op2 <= op2_rg;
-        rd_addr <= rd_addr_rg;
+        rd_addr <= rd;
         offset <= offset_rg;
         nop_instr <= nop_instr_rg;
     end
