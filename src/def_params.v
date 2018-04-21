@@ -80,3 +80,16 @@
 `define EX_LOAD_PAGEFAULT           4'd13
 `define EX_STORE_PAGEFAULT          4'd15
 `define EX_WIDTH                    3
+
+/////////////////////// CSR //////////////////////////
+`define CSR_MVENDORID               12'hF11
+`define CSR_MARCHID                 12'hF12
+`define CSR_MIMPID                  12'hF13
+`define CSR_MHARTID                 12'hF14
+`define CSR_MSTATUS                 12'h300
+`define CSR_MISA                    12'h301
+`define CSR_MTVEC                   12'h305
+`define CSR_MSCRATCH                12'h340
+`define CSR_MEPC                    12'h341
+`define CSR_MCAUSE                  12'h342
+`define CSR_MTVAL                   12'h343

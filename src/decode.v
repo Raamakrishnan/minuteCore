@@ -163,6 +163,15 @@ module decode(
                     nop_instr_rg = 1;
                     // `DISPLAY("Fence")
                 end
+                else if(op == `OP_SYSTEM) begin
+                    if (f3 == `F3_CSRRW) begin
+                        op1_rg = rs1_data;
+                    end
+                    else begin
+                        exception_out_rg = `EX_ILLEGAL_INSTR;
+                        exception_out_valid_rg = 1;
+                    end
+                end
                 else begin
                     exception_out_rg = `EX_ILLEGAL_INSTR;
                     exception_out_valid_rg = 1;
@@ -261,6 +270,7 @@ module decode(
             `OP_JALR: `DISPLAY("OP: JALR")
             `OP_LOAD: `DISPLAY("OP: LOAD")
             `OP_STORE: `DISPLAY("OP: Store")
+            `OP_SYSTEM: `DISPLAY("OP: System")
             default: `DISPLAY("OP: Unknown")
         endcase
         $strobe("%0d\tDECODE: PC: %h instr: %h op1: %h op2: %h offset: %h rd: r%d", $time, PC_out, instr_out, op1, op2, offset, rd_addr);

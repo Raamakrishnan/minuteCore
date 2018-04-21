@@ -1,11 +1,13 @@
 `ifdef __ICARUS__
     `ifndef INCLUDE_PARAMS
         `include "./src/def_params.v"
+        `include "./src/csr_except.v"
     `endif
 `endif
 `ifdef MODEL_TECH
     `ifndef INCLUDE_PARAMS
         `include "def_params.v"
+        `include "csr_except.v"
     `endif
 `endif
 `define DISPLAY(A) `ifdef SIMULATE $display("%0d\tWRITEBACK: ",$time,A); `endif
@@ -37,6 +39,12 @@ module writeback(
     output reg wr_enable
 );
 
+    wire [`REG_ADDR_SIZE : 0] wr_addr_csr;
+    wire [`REG_DATA_SIZE : 0] wr_data_csr;
+
+    csr_except csr_except(.clk(clk), .PC(PC), .instr(instr), .exception(exception), .exception_valid(exception_valid),
+        .wr_data(result), .flush(flush), .flush_addr(flush_addr), .rd_addr(wr_addr_csr), .rd_data(wr_data_csr));
+
     always@(*) begin
         wr_enable = 0;
         if(pipeline_valid) begin
@@ -48,6 +56,11 @@ module writeback(
                     || opcode == `OP_JAL || opcode == `OP_JALR || opcode == `OP_LUI || opcode == `OP_AUIPC) begin
                         wr_addr = rd_addr;
                         wr_data = result;
+                        wr_enable = 1;
+                    end
+                    else if(opcode == `OP_SYSTEM) begin
+                        wr_addr = wr_addr_csr;
+                        wr_data = wr_data_csr;
                         wr_enable = 1;
                     end
                 end
@@ -102,6 +115,7 @@ module writeback(
             `OP_JALR: `DISPLAY("OP: JALR")
             `OP_LOAD: `DISPLAY("OP: LOAD")
             `OP_STORE: `DISPLAY("OP: Store")
+            `OP_SYSTEM: `DISPLAY("OP: System")
             default: `DISPLAY("OP: Unknown")
         endcase
         $strobe("%0d\tWRITEBACK: PC: %h instr: %h result: %h rd: r%d", $time, PC, instr, result, rd_addr);

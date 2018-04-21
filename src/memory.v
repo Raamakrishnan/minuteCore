@@ -64,6 +64,7 @@ module memory(
     always@(*) begin
         if(pipeline_in_valid) begin
             mem_rd_enable = 0;
+            exception_out_valid_rg = 0;
             if(exception_in_valid) begin
                 exception_out_valid_rg = exception_in_valid;
                 exception_out_rg = exception_in;

@@ -132,6 +132,9 @@ module execute(
                     result_rg = op2;
                     addr_rg = op1 + offset;
                 end
+                else if(opcode_in == `OP_SYSTEM) begin
+                    result_rg = op1;
+                end
             end
         end
     end
@@ -201,6 +204,7 @@ module execute(
             `OP_JALR: `DISPLAY("OP: JALR")
             `OP_LOAD: `DISPLAY("OP: LOAD")
             `OP_STORE: `DISPLAY("OP: Store")
+            `OP_SYSTEM: `DISPLAY("OP: System")
             default: `DISPLAY("OP: Unknown")
         endcase
         $strobe("%0d\tEXECUTE: PC: %h instr: %h result: %h addr: %h rd: r%d", $time, PC_out, instr_out, result, addr, rd_addr_out);
