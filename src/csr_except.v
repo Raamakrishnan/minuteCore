@@ -40,10 +40,10 @@ module csr_except(
     //mhartid = 0
     //mstatus = 0
     reg [31:0] csr_mtvec = 0;
-    reg [31:0] csr_mepc;
-    reg [31:0] csr_mcause;
-    reg [31:0] csr_mtval;
-    reg [31:0] csr_mscratch;
+    reg [31:0] csr_mepc = 0;
+    reg [31:0] csr_mcause = 0;
+    reg [31:0] csr_mtval = 0;
+    reg [31:0] csr_mscratch = 0;
 
     assign flush = exception_valid;
     assign flush_addr = (exception_valid)? csr_mtvec : 0;
@@ -65,7 +65,7 @@ module csr_except(
     always@(posedge(clk)) begin
         if(opcode == `OP_SYSTEM && funct == `F3_CSRRW && !exception_valid && rs1 != 0) begin
             case(csr_addr)
-            `CSR_MISA:      csr_misa <= wr_data;
+            // `CSR_MISA:      csr_misa <= wr_data;
             `CSR_MTVEC:     csr_mtvec <= wr_data;
             `CSR_MEPC:      csr_mepc <= wr_data;
             `CSR_MCAUSE:    csr_mcause <= wr_data;
