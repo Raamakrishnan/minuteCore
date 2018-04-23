@@ -49,28 +49,47 @@ module csr_except(
     assign flush_addr = (exception_valid)? csr_mtvec : 0;
 
     always@(*) begin
-        if(opcode == `OP_SYSTEM && funct == `F3_CSRRW && !exception_valid) begin
-            case(csr_addr)
-            `CSR_MISA:      rd_data = csr_misa;
-            `CSR_MTVEC:     rd_data = csr_mtvec;
-            `CSR_MEPC:      rd_data = csr_mepc;
-            `CSR_MCAUSE:    rd_data = csr_mcause;
-            `CSR_MTVAL:     rd_data = csr_mtval;
-            `CSR_MSCRATCH:  rd_data = csr_mscratch;
-            default:        rd_data = 0;
-            endcase
+        if(!exception_valid) begin
+            if(opcode == `OP_SYSTEM && funct == `F3_CSRRW) begin
+                case(csr_addr)
+                `CSR_MISA:      rd_data = csr_misa;
+                `CSR_MTVEC:     rd_data = csr_mtvec;
+                `CSR_MEPC:      rd_data = csr_mepc;
+                `CSR_MCAUSE:    rd_data = csr_mcause;
+                `CSR_MTVAL:     rd_data = csr_mtval;
+                `CSR_MSCRATCH:  rd_data = csr_mscratch;
+                default:        rd_data = 0;
+                endcase
+            end
         end
+        // else begin
+        //     case(exception)
+        //         `EX_INSTR_ADDR_MISALIGN:    
+        //         `EX_ILLEGAL_INSTR:
+        //     endcase
+        // end
     end
 
     always@(posedge(clk)) begin
-        if(opcode == `OP_SYSTEM && funct == `F3_CSRRW && !exception_valid && rs1 != 0) begin
-            case(csr_addr)
-            // `CSR_MISA:      csr_misa <= wr_data;
-            `CSR_MTVEC:     csr_mtvec <= wr_data;
-            `CSR_MEPC:      csr_mepc <= wr_data;
-            `CSR_MCAUSE:    csr_mcause <= wr_data;
-            `CSR_MTVAL:     csr_mtval <= wr_data;
-            `CSR_MSCRATCH:  csr_mscratch <= wr_data;
+        if(!exception_valid) begin
+            if(opcode == `OP_SYSTEM && funct == `F3_CSRRW && rs1 != 0) begin
+                case(csr_addr)
+                // `CSR_MISA:      csr_misa <= wr_data;
+                `CSR_MTVEC:     csr_mtvec <= wr_data & 2'b00;
+                `CSR_MEPC:      csr_mepc <= wr_data & 2'b00;
+                `CSR_MCAUSE:    csr_mcause <= wr_data;
+                `CSR_MTVAL:     csr_mtval <= wr_data;
+                `CSR_MSCRATCH:  csr_mscratch <= wr_data;
+                endcase
+            end
+        end
+        else begin
+            csr_mcause <= exception;
+            csr_mepc <= PC & 2'b0;
+            case(exception)
+                `EX_INSTR_ADDR_MISALIGN:    csr_mtval <= PC;
+                `EX_ILLEGAL_INSTR:          csr_mtval <= instr;
+                default:                    csr_mtval <= 0;
             endcase
         end
     end

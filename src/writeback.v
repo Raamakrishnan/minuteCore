@@ -120,6 +120,7 @@ module writeback(
         endcase
         $strobe("%0d\tWRITEBACK: PC: %h instr: %h result: %h rd: r%d", $time, PC, instr, result, rd_addr);
         $strobe("%0d\tWRITEBACK: Exception: %d(valid %b)", $time, exception, exception_valid);
+        $display("%0d\tWRITEBACK: Flush Addr: %h(valid %b", $time, flush_addr, flush);
         end
     end
     endtask

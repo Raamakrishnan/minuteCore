@@ -51,6 +51,8 @@ module minuteCore(
     wire flush_IF;
     wire [`INSTR_SIZE : 0] flush_addr_IF;
     wire stall_IF;
+    wire flush_out_WB;
+    wire [`INSTR_SIZE : 0] flush_addr_out_WB;
 
     fetch fetch(
         .clk                    (clk),
@@ -175,12 +177,13 @@ module minuteCore(
         .flush_out          (flush_out_EXE),
         .flush_addr         (flush_addr_out_EXE),
         .halt               (halt_EXE_MEM),
-        .stall              (stall_EXE)
+        .stall              (stall_EXE),
+        .flush_in           (flush_out_WB)
     );
 
-    assign flush_IF = flush_out_EXE;
-    assign flush_ID = flush_out_EXE;
-    assign flush_addr_IF = flush_addr_out_EXE;
+    assign flush_IF = flush_out_EXE | flush_out_WB;
+    assign flush_ID = flush_out_EXE | flush_out_WB;
+    assign flush_addr_IF = ((flush_out_EXE)? flush_addr_out_EXE : ((flush_out_WB)? flush_addr_out_WB : 'hz));
 
     wire stall_MEM_out;
     wire [`ADDR_SIZE : 0] PC_MEM_WB;
@@ -228,7 +231,8 @@ module minuteCore(
         .mem_rd_data        (dmem_r_data),
         .mem_rd_enable      (dmem_r_enable),
         .mem_rd_ready       (dmem_ready),
-        .stall_out          (stall_MEM_out)
+        .stall_out          (stall_MEM_out),
+        .flush              (flush_out_WB)
     );
 
     writeback writeback(
@@ -248,7 +252,9 @@ module minuteCore(
         .halt_out           (halt),
         .wr_addr            (wr_addr_WB_RF),
         .wr_data            (wr_data_WB_RF),
-        .wr_enable          (wr_enable_WB_RF)
+        .wr_enable          (wr_enable_WB_RF),
+        .flush              (flush_out_WB),
+        .flush_addr         (flush_addr_out_WB)
     );
 
     wire stall_hazard;
