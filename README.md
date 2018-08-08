@@ -3,4 +3,6 @@ A simple, 32-bit, in order, 5-stage interlocking pipelined RISC-V core. It fully
 
 ## Block Diagram
 
+![Block Diagram of minuteCore](./images/block-diagram.png)
+
 This work is done in partial fulfillment of requirements of B. Tech (Electronics and Communication), SASTRA Deemed to be University, India.
